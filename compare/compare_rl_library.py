@@ -31,7 +31,7 @@ indexer = rl.Index()
 indexer.block(left_on='sex')
 candidate_pairs = indexer.index(junget_1850, junget_1845)
 
-# 2 - Comparing step - Jaro-Winkler score for first and patronym
+# 2 - Comparing step - Jaro-Winkler score for first name and patronym
 # initialise Compare class
 comp = rl.Compare()
 comp.string('first_names', 'first_names',
@@ -43,7 +43,7 @@ comp.add(CompareAge('birth_year', 'birth_year', label='age_distance'))
 comparison_vectors = comp.compute(candidate_pairs, junget_1850, junget_1845)
 
 # changing to absolute values and dropping all age distances above 2
-# for optmization purposes this shoull maybe be done before comparing
+# for optmization purposes this should maybe be done before comparing
 comparison_vectors['age_distance'] = comparison_vectors['age_distance'].abs()
 comparison_vectors = comparison_vectors.loc[comparison_vectors['age_distance'] <= 2]
 
