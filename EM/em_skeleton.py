@@ -43,7 +43,7 @@ dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 # 2. Parameters
 
 # 3-dimensional array consisting of the multinomial distance bins (fn, ln, age)
-# LOOK INTO: how to automate this (could be min-max range calculation - otherwise just received as parameters)
+# LOOK INTO: how to automate this (could be min-max range calculation, or convert to sets - otherwise just received as parameters)
 dimensions = 3*4*4
 theta_M = np.full((3, 4, 4), 1/dimensions)
 theta_U = np.full((3, 4, 4), 1/dimensions)
@@ -56,12 +56,9 @@ theta_U = np.full((3, 4, 4), 1/dimensions)
 match_guess = 100
 p_M = match_guess/(len(dataset))
 p_U = 1 - p_M
-# CH - Looks good enough for an initial value. If you want p_U in a separate variable, you should probably
-# CH - calculate it inside the loop so it gets updated whenever p_M changes.
-# KDA - true, I will look into that in the EM-steps
+
 
 # 3. Loop over steps E and M
-
 
 def em_steps():
 
@@ -71,27 +68,34 @@ def em_steps():
     n_iterations = 3
     for i in range(n_iterations):
         # E-step
-
-        # CH - Note: Here you need to iterate over your training examples somehow.
-        # CH - For each example, you need to (a) get the features and (b) look up the corresponding
-        # CH - elements in the theta vector.
-
         # get features and look up corresponding theta element
-        # I wonder if there is a cleaner way to do this
-        for row in np.nditer(dataset_values):
-            index = dataset_values[row]
-            theta_value_M = theta_M[index[0], index[1], index[2]]
-            theta_value_U = theta_U[index[0], index[1], index[2]]
+        for pair in np.nditer(dataset_values):
+            distances = dataset_values[pair]
+            # LOOK INTO: Maybe I can use unpacking, (*distances), and pass as args that way. Mosh: 5,22
+            theta_value_M = theta_M[distances[0], distances[1], distances[2]]
+            theta_value_U = theta_U[distances[0], distances[1], distances[2]]
             # vector w
+            global p_M
+            global p_U
             w = (theta_value_M*p_M)/((theta_value_M*p_M)+(theta_value_U*p_U))
-        print(f"{i} iteration done: {w} and {theta_value_M}")
+            print(
+                f"iteration: {i} ; w-vector: {w} ; theta_M: {theta_value_M} ; theta_U: {theta_value_U}")
         # M-step
-        # updated match probability
-        p_M_1 = np.mean(w)
-        # this is obviously wrong - I have not introduced the the actual
+        # Below inspired from R-code of: https://github.com/historical-record-linking/matching-codes/blob/master/EM/R_codes/c_em_algorithm_generic.R
+            # updated match probability
+            p_M_1 = np.mean(w)
+            p_U_1 = 1 - p_M_1
+            # updated parameter estimates(theta)
 
-        # updated parameter estimates(theta)
-        theta_M_1 = np.argmax(np.sum(np.log(w)))
+            theta_M_1 = np.argmax(np.sum(np.log(w)))
+            theta_U_1 = np.argmax(np.sum(np.log(1-w)))
+
+            # update values
+            theta_M[distances[0], distances[1], distances[2]] = theta_M_1
+            theta_U[distances[0], distances[1], distances[2]] = theta_U_1
+
+            p_M = p_M_1
+            p_U = p_U_1
 
 
 print(f"starting loop")
