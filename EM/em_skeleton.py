@@ -60,12 +60,12 @@ p_U = 1 - p_M
 
 # 3. Loop over steps E and M
 
-def em_steps():
+def em_steps(p_M, p_U, theta_M, theta_U):
 
     # initialize loop - number of iterations will be changed later
     # loop until convergence - or maximum 100 iterations (or other number)
     # if the latter - this information should be outputted
-    n_iterations = 3
+    n_iterations = 1
     for i in range(n_iterations):
         # E-step
         # get features and look up corresponding theta element
@@ -75,11 +75,11 @@ def em_steps():
             theta_value_M = theta_M[distances[0], distances[1], distances[2]]
             theta_value_U = theta_U[distances[0], distances[1], distances[2]]
             # vector w
-            global p_M
-            global p_U
+            # assign specific vector value by indexing instead of append
             w = (theta_value_M*p_M)/((theta_value_M*p_M)+(theta_value_U*p_U))
-            print(
-                f"iteration: {i} ; w-vector: {w} ; theta_M: {theta_value_M} ; theta_U: {theta_value_U}")
+            print(theta_value_M, p_M, theta_value_U, p_U)
+            # print(
+            #    f"iteration: {i} ; w-vector: {w} ; theta_M: {theta_value_M} ; theta_U: {theta_value_U}")
         # M-step
         # Below inspired from R-code of: https://github.com/historical-record-linking/matching-codes/blob/master/EM/R_codes/c_em_algorithm_generic.R
             # updated match probability
@@ -94,9 +94,9 @@ def em_steps():
             theta_M[distances[0], distances[1], distances[2]] = theta_M_1
             theta_U[distances[0], distances[1], distances[2]] = theta_U_1
 
-            p_M = p_M_1
-            p_U = p_U_1
+            #p_M = p_M_1
+            #p_U = p_U_1
 
 
 print(f"starting loop")
-em_steps()
+em_steps(p_M, p_U, theta_M, theta_U)
