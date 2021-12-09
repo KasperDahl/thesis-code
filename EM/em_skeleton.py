@@ -67,7 +67,9 @@ def em_steps(p_M, p_U, theta_M, theta_U):
     # if the latter - this information should be outputted
     n_iterations = 1
     for i in range(n_iterations):
+        w = []
         # E-step
+        print("start E-step")
         # get features and look up corresponding theta element
         for pair in np.nditer(dataset_values):
             distances = dataset_values[pair]
@@ -75,27 +77,34 @@ def em_steps(p_M, p_U, theta_M, theta_U):
             theta_value_M = theta_M[distances[0], distances[1], distances[2]]
             theta_value_U = theta_U[distances[0], distances[1], distances[2]]
             # vector w
-            # assign specific vector value by indexing instead of append
-            w = (theta_value_M*p_M)/((theta_value_M*p_M)+(theta_value_U*p_U))
-            print(theta_value_M, p_M, theta_value_U, p_U)
+            # LOOK INTO: indexing might be faster than appending
+            w_vector = (theta_value_M*p_M) / \
+                ((theta_value_M*p_M)+(theta_value_U*p_U))
+            w.append(w_vector)
             # print(
             #    f"iteration: {i} ; w-vector: {w} ; theta_M: {theta_value_M} ; theta_U: {theta_value_U}")
+        print("end E-step")
+        # convert to Numpy-array
+        w_np = np.array(w)
+
         # M-step
-        # Below inspired from R-code of: https://github.com/historical-record-linking/matching-codes/blob/master/EM/R_codes/c_em_algorithm_generic.R
-            # updated match probability
-            p_M_1 = np.mean(w)
-            p_U_1 = 1 - p_M_1
-            # updated parameter estimates(theta)
+        print("start E-step")
+        # updated match probability
+        p_M_1 = np.mean(w_np)
+        print(p_M_1)
+        p_U_1 = 1 - p_M_1
+        # updated parameter estimates(theta)
 
-            theta_M_1 = np.argmax(np.sum(np.log(w)))
-            theta_U_1 = np.argmax(np.sum(np.log(1-w)))
+        theta_M_1 = np.argmax(np.sum(np.log(w_np)))
+        theta_U_1 = np.argmax(np.sum(np.log(1-w_np)))
+        print(theta_M_1, theta_U_1)
 
-            # update values
-            theta_M[distances[0], distances[1], distances[2]] = theta_M_1
-            theta_U[distances[0], distances[1], distances[2]] = theta_U_1
+        # update values
+        theta_M[distances[0], distances[1], distances[2]] = theta_M_1
+        theta_U[distances[0], distances[1], distances[2]] = theta_U_1
 
-            #p_M = p_M_1
-            #p_U = p_U_1
+        #p_M = p_M_1
+        #p_U = p_U_1
 
 
 print(f"starting loop")
