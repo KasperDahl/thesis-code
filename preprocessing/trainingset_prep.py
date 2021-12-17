@@ -11,19 +11,19 @@ parishes = ["sevel", "selde", "thorum", "junget"]
 
 # create new df of people from specific parishes and add new column with birth year
 
+# create census of 
+#def census(census_year):
 
-def census(census_year):
+for p in parishes:
+    df = c1845.loc[c1845["event_parish"] == p]
+    print(f"{p}, {df.shape}")
+    df['birth_year'] = 1845 - df['age']
+    df.reset_index()
+    df.to_csv(f"C:/thesis_code/Github/data/trainingsets_s/{p}_1845")
 
-    for p in parishes:
-        df = c1845.loc[c1845["event_parish"] == p]
-        print(f"{p}, {df.shape}")
-        df['birth_year'] = 1845 - df['age']
-        df.reset_index()
-        df.to_csv(f"C:/thesis_code/Github/data/trainingsets_s/{p}_1845")
-
-    for p in parishes:
-        df = c1850.loc[c1850["event_parish"] == p]
-        print(f"{p}, {df.shape}")
-        df['birth_year'] = 1850 - df['age']
-        df.reset_index()
-        df.to_csv(f"C:/thesis_code/Github/data/trainingsets_s/{p}_1850")
+for p in parishes:
+    df = c1850.loc[c1850["event_parish"] == p]
+    print(f"{p}, {df.shape}")
+    df['birth_year'] = 1850 - df['age']
+    df.reset_index()
+    df.to_csv(f"C:/thesis_code/Github/data/trainingsets_s/{p}_1850")

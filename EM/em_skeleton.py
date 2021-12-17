@@ -7,7 +7,6 @@ fn_feature = dataset['fn_score']
 ln_feature = dataset['ln_score']
 # not entirely sure why this list is received as floats
 dist_age = dataset['age_distance'].astype(int)
-
 # 1. Distance Bins
 
 # The string numbers below are based on research by Winkler 1988
@@ -39,6 +38,7 @@ for name in ln_feature:
 
 # Create numpy array with values for use in E-step
 dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
+# print(dataset_values[:90])
 
 # 2. Parameters
 
@@ -56,23 +56,27 @@ theta_U = np.full((3, 4, 4), 1/dimensions)
 match_guess = 100
 p_M = match_guess/(len(dataset))
 p_U = 1 - p_M
-
+print(p_M)
 
 # 3. Loop over steps E and M
+
 
 def em_steps(p_M, p_U, theta_M, theta_U):
 
     # initialize loop - number of iterations will be changed later
     # loop until convergence - or maximum 100 iterations (or other number)
     # if the latter - this information should be outputted
-    n_iterations = 1
+    n_iterations = 10
     for i in range(n_iterations):
+        #w = np.zeros(len(dataset_values))
         w = []
-        # E-step
-        print("start E-step")
+        index = 0
+        # E-STEP
+        #print("start E-step")
         # get features and look up corresponding theta element
-        for pair in np.nditer(dataset_values):
-            distances = dataset_values[pair]
+        # for pair in np.nditer(dataset_values):
+        for i in range(len(dataset_values)):
+            distances = dataset_values[i]
             # LOOK INTO: Maybe I can use unpacking, (*distances), and pass as args that way. Mosh: 5,22
             theta_value_M = theta_M[distances[0], distances[1], distances[2]]
             theta_value_U = theta_U[distances[0], distances[1], distances[2]]
@@ -80,31 +84,39 @@ def em_steps(p_M, p_U, theta_M, theta_U):
             # LOOK INTO: indexing might be faster than appending
             w_vector = (theta_value_M*p_M) / \
                 ((theta_value_M*p_M)+(theta_value_U*p_U))
+            #w[index] = w_vector
             w.append(w_vector)
+            index += 1
             # print(
             #    f"iteration: {i} ; w-vector: {w} ; theta_M: {theta_value_M} ; theta_U: {theta_value_U}")
-        print("end E-step")
+        #print("end E-step")
         # convert to Numpy-array
         w_np = np.array(w)
+        # print(w_np)
+        # M-STEP
+        #print("start M-step")
+        # calculate the weighted
+        # print(theta_U)
+        for i in range(len(dataset_values)):
+            distances = dataset_values[i]
+            theta_M[distances[0], distances[1], distances[2]
+                    ] = theta_M[distances[0], distances[1], distances[2]] + w_np[i]
+            theta_U[distances[0], distances[1], distances[2]
+                    ] = theta_U[distances[0], distances[1], distances[2]] + (1-w_np[i])
 
-        # M-step
-        print("start E-step")
-        # updated match probability
-        p_M_1 = np.mean(w_np)
-        print(p_M_1)
-        p_U_1 = 1 - p_M_1
-        # updated parameter estimates(theta)
+        # Normalize theta_M and theta_U
+        theta_M = theta_M/theta_M.sum(keepdims=True)
+        theta_U = theta_U/theta_U.sum(keepdims=True)
+        """ print(np.sum(theta_M))
+        print(theta_M)
+        print(np.sum(theta_U))
+        print(theta_U)
+ """
 
-        theta_M_1 = np.argmax(np.sum(np.log(w_np)))
-        theta_U_1 = np.argmax(np.sum(np.log(1-w_np)))
-        print(theta_M_1, theta_U_1)
-
-        # update values
-        theta_M[distances[0], distances[1], distances[2]] = theta_M_1
-        theta_U[distances[0], distances[1], distances[2]] = theta_U_1
-
-        #p_M = p_M_1
-        #p_U = p_U_1
+        p_M = np.mean(w_np)
+        print(p_M)
+        # print(p_M_1)
+        p_U = 1 - p_M
 
 
 print(f"starting loop")
