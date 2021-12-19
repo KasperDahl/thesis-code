@@ -38,7 +38,6 @@ for name in ln_feature:
 
 # Create numpy array with values for use in E-step
 dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
-# print(dataset_values[:90])
 
 # 2. Parameters
 
@@ -56,7 +55,6 @@ theta_U = np.full((3, 4, 4), 1/dimensions)
 match_guess = 100
 p_M = match_guess/(len(dataset))
 p_U = 1 - p_M
-print(p_M)
 
 # 3. Loop over steps E and M
 
@@ -89,14 +87,13 @@ def em_steps(p_M, p_U, theta_M, theta_U):
             index += 1
             # print(
             #    f"iteration: {i} ; w-vector: {w} ; theta_M: {theta_value_M} ; theta_U: {theta_value_U}")
-        #print("end E-step")
+        print("end E-step")
         # convert to Numpy-array
         w_np = np.array(w)
-        # print(w_np)
+
         # M-STEP
-        #print("start M-step")
-        # calculate the weighted
-        # print(theta_U)
+        print("start M-step")
+        # maximize theta values in 3-d arrays
         for i in range(len(dataset_values)):
             distances = dataset_values[i]
             theta_M[distances[0], distances[1], distances[2]
@@ -107,15 +104,8 @@ def em_steps(p_M, p_U, theta_M, theta_U):
         # Normalize theta_M and theta_U
         theta_M = theta_M/theta_M.sum(keepdims=True)
         theta_U = theta_U/theta_U.sum(keepdims=True)
-        """ print(np.sum(theta_M))
-        print(theta_M)
-        print(np.sum(theta_U))
-        print(theta_U)
- """
 
         p_M = np.mean(w_np)
-        print(p_M)
-        # print(p_M_1)
         p_U = 1 - p_M
 
 
