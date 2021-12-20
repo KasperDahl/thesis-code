@@ -1,3 +1,4 @@
+from numpy.lib.npyio import savetxt
 import pandas as pd
 import numpy as np
 from bisect import bisect_left
@@ -44,32 +45,26 @@ p_U = 1 - p_M
 
 def em_steps(p_M, p_U, theta_M, theta_U):
 
+    # E-STEP
     # initialize loop - number of iterations will be changed later
     # loop until convergence - or maximum 100 iterations (or other number)
     # if the latter - this information should be outputted
     n_iterations = 20
     for i in range(n_iterations):
-        #w = np.zeros(len(dataset_values))
-        w = []
-        index = 0
-        # E-STEP
+        w = np.zeros(len(dataset_values))
+
         #print("start E-step")
-        # get features and look up corresponding theta element
-        # for pair in np.nditer(dataset_values):
+        # get features and look up corresponding theta element for pair in np.nditer(dataset_values):
         for i in range(len(dataset_values)):
             distances = dataset_values[i]
             # LOOK INTO: Maybe I can use unpacking, (*distances), and pass as args that way. Mosh: 5,22
             theta_value_M = theta_M[distances[0], distances[1], distances[2]]
             theta_value_U = theta_U[distances[0], distances[1], distances[2]]
             # vector w
-            # LOOK INTO: indexing might be faster than appending
             w_vector = (theta_value_M*p_M) / \
                 ((theta_value_M*p_M)+(theta_value_U*p_U))
-            #w[index] = w_vector
-            w.append(w_vector)
-            index += 1
-            # print(
-            #    f"iteration: {i} ; w-vector: {w} ; theta_M: {theta_value_M} ; theta_U: {theta_value_U}")
+            w[i] = w_vector
+
         #print("end E-step")
         # convert to Numpy-array
         w_np = np.array(w)
@@ -91,7 +86,7 @@ def em_steps(p_M, p_U, theta_M, theta_U):
         p_M = np.mean(w_np)
         p_U = 1 - p_M
 
-        print(f"P_M: {p_M}, P_U: {p_U}")
+        #print(f"P_M: {p_M}, P_U: {p_U}")
 
     return theta_M
 
@@ -99,3 +94,7 @@ def em_steps(p_M, p_U, theta_M, theta_U):
 print(f"starting loop")
 theta_final = em_steps(p_M, p_U, theta_M, theta_U)
 print(theta_final)
+
+#reshape = theta_final.reshape(theta_final.shape[0], -1)
+#savetxt('C:/thesis_code/Github/data/numpy_arrays/np_array', reshape)
+np.save('C:/thesis_code/Github/data/numpy_arrays/np_array1.npy', theta_final)
