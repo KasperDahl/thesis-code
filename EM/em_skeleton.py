@@ -49,9 +49,9 @@ def em_steps(p_M, p_U, theta_M, theta_U):
     # initialize loop - number of iterations will be changed later
     # loop until convergence - or maximum 100 iterations (or other number)
     # if the latter - this information should be outputted
-    n_iterations = 20
+    n_iterations = 30
     for i in range(n_iterations):
-        w = np.zeros(len(dataset_values))
+        w_vector = np.zeros(len(dataset_values))
 
         #print("start E-step")
         # get features and look up corresponding theta element for pair in np.nditer(dataset_values):
@@ -61,13 +61,11 @@ def em_steps(p_M, p_U, theta_M, theta_U):
             theta_value_M = theta_M[distances[0], distances[1], distances[2]]
             theta_value_U = theta_U[distances[0], distances[1], distances[2]]
             # vector w
-            w_vector = (theta_value_M*p_M) / \
+            w = (theta_value_M*p_M) / \
                 ((theta_value_M*p_M)+(theta_value_U*p_U))
-            w[i] = w_vector
+            w_vector[i] = w
 
         #print("end E-step")
-        # convert to Numpy-array
-        w_np = np.array(w)
 
         # M-STEP
         #print("start M-step")
@@ -75,18 +73,18 @@ def em_steps(p_M, p_U, theta_M, theta_U):
         for i in range(len(dataset_values)):
             distances = dataset_values[i]
             theta_M[distances[0], distances[1], distances[2]
-                    ] = theta_M[distances[0], distances[1], distances[2]] + w_np[i]
+                    ] = theta_M[distances[0], distances[1], distances[2]] + w_vector[i]
             theta_U[distances[0], distances[1], distances[2]
-                    ] = theta_U[distances[0], distances[1], distances[2]] + (1-w_np[i])
+                    ] = theta_U[distances[0], distances[1], distances[2]] + (1-w_vector[i])
 
         # Normalize theta_M and theta_U
-        theta_M = theta_M/theta_M.sum(keepdims=True)
-        theta_U = theta_U/theta_U.sum(keepdims=True)
+        theta_M = theta_M/theta_M.sum()
+        theta_U = theta_U/theta_U.sum()
 
-        p_M = np.mean(w_np)
+        p_M = np.mean(w_vector)
         p_U = 1 - p_M
 
-        #print(f"P_M: {p_M}, P_U: {p_U}")
+        print(f"P_M: {p_M}, P_U: {p_U}")
 
     return theta_M
 
