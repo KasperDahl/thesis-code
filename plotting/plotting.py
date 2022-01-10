@@ -13,3 +13,7 @@ ax = fig.add_subplot(111, projection='3d')
 z, x, y = data.nonzero()
 ax.scatter(x, y, z, zdir='z')
 plt.savefig('C:/thesis_code/Github/plotting/plots/test.png')
+
+# legend eller colorbar med hvad farverne indikerer
+# Find ud af hvordan jeg kan ændre akserne
+# fjerne "nullerne"

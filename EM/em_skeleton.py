@@ -4,6 +4,7 @@ import numpy as np
 from bisect import bisect_left
 
 dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/junget_1850_1845")
+#dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/testset")
 fn_feature = dataset['fn_score']
 ln_feature = dataset['ln_score']
 # not entirely sure why this list is received as floats
@@ -36,10 +37,11 @@ theta_U = np.full((3, 4, 4), 1/dimensions)
 # probability of being a match - should be a reasonable guess
 # example: if I estimate a 100 matches in the comparison space of two censuses of a 1000 records each
 # the estimated probability is 100/(1000 X 1000) = 0,0001
-match_guess = 100
+match_guess = 2400
+#match_guess = 8
 p_M = match_guess/(len(dataset))
 p_U = 1 - p_M
-
+print(p_M)
 # 3. Loop over steps E and M
 
 
@@ -49,12 +51,12 @@ def em_steps(p_M, p_U, theta_M, theta_U):
     # initialize loop - number of iterations will be changed later
     # loop until convergence - or maximum 100 iterations (or other number)
     # if the latter - this information should be outputted
-    n_iterations = 30
+    n_iterations = 1000
     for i in range(n_iterations):
         w_vector = np.zeros(len(dataset_values))
 
         #print("start E-step")
-        # get features and look up corresponding theta element for pair in np.nditer(dataset_values):
+        # get features and look up corresponding theta element for pair
         for i in range(len(dataset_values)):
             distances = dataset_values[i]
             # LOOK INTO: Maybe I can use unpacking, (*distances), and pass as args that way. Mosh: 5,22
@@ -84,8 +86,9 @@ def em_steps(p_M, p_U, theta_M, theta_U):
         p_M = np.mean(w_vector)
         p_U = 1 - p_M
 
-        print(f"P_M: {p_M}, P_U: {p_U}")
-
+        #print(f"P_M: {p_M}, P_U: {p_U}")
+    print(f"Theta_U: \n {theta_U}")
+    print(p_M)
     return theta_M
 
 
