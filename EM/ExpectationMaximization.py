@@ -5,7 +5,8 @@ from bisect import bisect_left
 
 
 # dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/junget_1850_1845")
-dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/testset")
+# dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/testset")
+dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/testset_2d")
 
 # Bisect dataset before
 class ExpectationMaximization:
@@ -58,13 +59,9 @@ class ExpectationMaximization:
 
 fn_feature = dataset["fn_score"]
 ln_feature = dataset["ln_score"]
-# not entirely sure why this list is received as floats
-dist_age = dataset["age_distance"].astype(int)
-# 1. Distance Bins
+# dist_age = dataset["age_distance"].astype(int)
 
 # The string numbers below are based on research by Winkler 1988
-
-
 def convert_JW(feature, breakpoints=[0.75, 0.88, 0.933], values=[3, 2, 1, 0]):
     i = bisect_left(breakpoints, feature)
     return values[i]
@@ -73,13 +70,13 @@ def convert_JW(feature, breakpoints=[0.75, 0.88, 0.933], values=[3, 2, 1, 0]):
 dist_fn = [convert_JW(feature) for feature in fn_feature]
 dist_ln = [convert_JW(feature) for feature in ln_feature]
 
-
 # Create numpy array with values for use in E-step
-dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
+# dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
+dataset_values = np.array([dist_fn, dist_ln]).transpose()
 
 
 # TEST CLASS
 print(f"starting CLASS")
-em = ExpectationMaximization(dataset_values, 8, 3, [3, 4, 4])
+em = ExpectationMaximization(dataset_values, 8, 2, [4, 4])
 result = em.em_steps()
 print(result)
