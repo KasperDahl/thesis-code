@@ -8,6 +8,8 @@ from bisect import bisect_left
 dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/testset")
 
 # Bisect dataset before
+
+
 class ExpectationMaximization:
     def __init__(
         self,
