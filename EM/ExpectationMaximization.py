@@ -4,9 +4,9 @@ import numpy as np
 from bisect import bisect_left
 
 
-dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/junget_1850_1845")
-#dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/testset")
-#dataset = pd.read_csv("C:/thesis_code/Github/data//comp_sets/testset_2d")
+dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
+#dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset")
+#dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset_2d")
 
 
 class ExpectationMaximization:
@@ -99,5 +99,5 @@ dataset_values = np.array([dist_fn, dist_ln]).transpose()
 # TEST CLASS
 print(f"starting CLASS")
 em = ExpectationMaximization(dataset_values, 100, 2, [4, 4])
-result = em.em_steps(1000)
+result = em.em_steps(100)
 print(result)
