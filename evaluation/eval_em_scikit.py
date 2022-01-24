@@ -6,6 +6,8 @@ import pandas as pd
 
 
 # Comparison of small test set (eg. "junget_1850_1845") to manually linked full set (eg. "1850_to_1845_full")
-# Withdraw all unique indices from source_1 (eg. 1850) - find the relevant id1
-#
+# Withdraw all unique indices from source_1 (eg. 1850) - maybe it is all of them?
+# Find the relevant ids for each of the unique indices in the manually linked set
+# - this should show how many of the ids there exist a confirmed manual link for
+# Find out which of the unique
 #
