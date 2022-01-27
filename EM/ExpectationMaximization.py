@@ -2,6 +2,7 @@ from numpy.lib.npyio import savetxt
 import pandas as pd
 import numpy as np
 from bisect import bisect_left
+from time import perf_counter as pc
 
 
 dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
@@ -31,10 +32,10 @@ class ExpectationMaximization:
             elements_dimensions)][::-1]
         self.geo_dist_M = self.create_geo_dist(
             self.geo_list_M, elements_dimensions)
-        # print(self.geo_dist_M)
+        print(self.geo_dist_M)
         self.geo_dist_U = self.create_geo_dist(
             self.geo_list_U, elements_dimensions)
-        # print(self.geo_dist_U)
+        print(self.geo_dist_U)
         # self.geo_dist_M = self.geometric_dist(0.5)
         # self.geo_dist_U = self.geo_dist_M[::-1]
 
@@ -42,6 +43,7 @@ class ExpectationMaximization:
         for i in range(iterations):
             w_vector = np.zeros(len(self.data))
             # E-STEP
+            t1 = pc()
             for i in range(len(self.data)):
                 theta_value_M = self.theta_M[tuple(self.data[i])]
                 theta_value_U = self.theta_U[tuple(self.data[i])]
@@ -57,6 +59,8 @@ class ExpectationMaximization:
                 w_vector[i] = w
 
             # M-STEP
+            t2 = pc()
+            print(t2-t1)
             for i in range(len(dataset_values)):
                 self.theta_M[tuple(self.data[i])] = (
                     self.theta_M[tuple(self.data[i])] + w_vector[i]

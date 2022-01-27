@@ -18,7 +18,7 @@ data['ln_score'] = [convert_JW(feature) for feature in data['ln_score']]
 
 data.to_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845_bisected")
 
-model = GaussianMixture(n_components=2, init_params='random')
+model = GaussianMixture(n_components=2, init_params='random', random_state=1)
 model.fit(data)
 results = model.predict(data)
 
@@ -26,7 +26,9 @@ df = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845",
                  usecols=['Unnamed: 0', 'Unnamed: 1'])
 df['EM_results'] = results.tolist()
 df.reset_index()
+# print(type(df))
 print(df)
+
 #np.savetxt("C:/thesis_code/Github/data/results/junget_1850_1845_EM_scikit", results)
 df.to_csv(
     "C:/thesis_code/Github/data/results/junget_1850_1845_EM_scikit", index=False)
