@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from sklearn.metrics import precision_recall_fscore_support
 
 
 data = pd.read_csv(
@@ -53,18 +55,32 @@ def attach_manual_links(df):
 
 
 def find_correct_links(df):
+    # All the correct manual links that the EM didn't find are not represented - need to be done in some manner
     df['manual_link'] = 0
+    counter = 0
     for index, row in df.iterrows():
-        if df['pa_id_1845'].equals(df['pa_id2']):
+        if row['pa_id_1845'] == row['pa_id2']:
             row['manual_link'] = 1
+            counter += 1
+    # print(counter)
     df.to_csv(
         "C:/thesis_code/Github/data/evaluation/junget_1850_1845_pa_id")
+    return df
+
+
+def precision_recall(df):
+    results = df['EM_results'].tolist()
+    manual_links = df['manual_link'].tolist()
+    print(precision_recall_fscore_support(
+        manual_links, results, average='macro'))
+    # print(results)
 
 
 df_pa_id = merge_pa_id(data)
 removed = remove_non_manual_links(df_pa_id)
 manual = attach_manual_links(removed)
-find_correct_links(manual)
+correct_links = find_correct_links(manual)
+precision_recall(correct_links)
 
 # find_correct_links(test)
 # print(df_pa_id)
