@@ -4,7 +4,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 
 data = pd.read_csv(
-    "C:/thesis_code/Github/data/results/junget_1850_1845_EM_scikit")
+    "C:/thesis_code/Github/data/results/thy_parishes_1850_1845_EM_scikit")
 # data.reset_index
 # print(data)
 manual_links = pd.read_csv(
@@ -17,9 +17,9 @@ def merge_pa_id(df):
     # merge pa_ids from sources into the dataframe with the EM-results and remove the indices given at comparison level
     # source 1 is the latest census, since the standard is to link backwards
     source_1 = pd.read_csv(
-        "C:/thesis_code/Github/data/trainingsets_s/junget_1850", usecols=['pa_id'])
+        "C:/thesis_code/Github/data/trainingsets_s/thy_parishes_1850", usecols=['pa_id'])
     source_2 = pd.read_csv(
-        "C:/thesis_code/Github/data/trainingsets_s/junget_1845", usecols=['pa_id'])
+        "C:/thesis_code/Github/data/trainingsets_s/thy_parishes_1845", usecols=['pa_id'])
     df1 = df.merge(source_1, left_on='Unnamed: 0', right_index=True)
     df2 = df1.merge(source_2, how='left',
                     left_on='Unnamed: 1', right_index=True, suffixes=('_1850', '_1845'))
@@ -78,7 +78,7 @@ def find_correct_links(df):
             counter += 1
     # print(counter)
     df.to_csv(
-        "C:/thesis_code/Github/data/evaluation/junget_1850_1845_pa_id")
+        "C:/thesis_code/Github/data/evaluation/thy_parishes_1850_1845_pa_id")
     return df
 
 
@@ -93,10 +93,11 @@ def precision_recall(df):
 # ISSUES:
 # 1. No evaluation of links, so in many cases the EM-algorithm links one pa_id to more than one other pa_id
 
+
 df_pa_id = merge_pa_id(data)
 print(df_pa_id)
 no_conflicts = remove_conflicts(df_pa_id)
-
+print(no_conflicts)
 removed = remove_non_manual_links(no_conflicts)
 # # print(removed)
 manual = attach_manual_links(removed)

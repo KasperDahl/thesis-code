@@ -2,6 +2,7 @@ import pandas as pd
 
 # I need to evaluate the suggested matches based on the following issues (for scikit EM):
 # 1. Iterate through the results from EM-algorithm (dataframe) and create new dataframe with only match-cluster
+# OBS! FORTÆLLER IKKE NOGET OM FALSE NEGATIVES O.A
 #        ISSUES:
 #           - There is no information about the clusters besides the assignment of a number
 #           - This means there is no evaluation of the score
@@ -13,6 +14,7 @@ import pandas as pd
 #         SOLUTIONS:
 #           - Is it possible to assign the pa_id instead of the rl_library index numbers to avoid the extra bookkeeping? (Multi-index?) ASK NICOLAI
 # 3. Evaluation of links:
+# OBS! DROP MÅSKE DETTE SKRIDT I FØRSTE OMGANG
 #         ISSUES:
 #           - One individual might be linked to more than one other individual
 #           - Links might be based on a really low score

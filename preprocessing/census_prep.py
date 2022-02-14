@@ -17,4 +17,5 @@ for year in years:
     df.append(temp)
 
 census_1850 = pd.concat(df)  # concatenate into one single DataFrame
-census_1850.to_csv("C:/thesis_code/Github/data/censuses/census_1850")
+# census_1850.to_csv("C:/thesis_code/Github/data/censuses/census_1850")
+print(census_1850)

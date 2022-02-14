@@ -7,18 +7,20 @@ import pandas as pd
 c1845 = pd.read_csv("C:/thesis_code/Github/data/censuses/census_1845")
 c1850 = pd.read_csv("C:/thesis_code/Github/data/censuses/census_1850")
 
-parishes = ["sevel", "selde", "thorum", "junget"]
+#parishes = ["sevel", "selde", "thorum", "junget"]
+parishes = ["junget"]
 
 # create new df of people from specific parishes and add new column with birth year
 
-# create census of 
-#def census(census_year):
-
+# create census of
+# def census(census_year):
+print(c1850.dtypes)
 for p in parishes:
     df = c1845.loc[c1845["event_parish"] == p]
     print(f"{p}, {df.shape}")
     df['birth_year'] = 1845 - df['age']
     df.reset_index()
+    print(type(df))
     df.to_csv(f"C:/thesis_code/Github/data/trainingsets_s/{p}_1845")
 
 for p in parishes:
@@ -27,3 +29,4 @@ for p in parishes:
     df['birth_year'] = 1850 - df['age']
     df.reset_index()
     df.to_csv(f"C:/thesis_code/Github/data/trainingsets_s/{p}_1850")
+    print(df)
