@@ -96,7 +96,7 @@ def precision_recall(df):
 df_pa_id = merge_pa_id(data)
 print(df_pa_id)
 no_conflicts = remove_conflicts(df_pa_id)
-
+print(no_conflicts)
 removed = remove_non_manual_links(no_conflicts)
 # # print(removed)
 manual = attach_manual_links(removed)

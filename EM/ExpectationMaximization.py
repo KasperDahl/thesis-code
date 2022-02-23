@@ -7,7 +7,7 @@ from time import perf_counter as pc
 
 dataset = pd.read_csv(
     "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
-# dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
+#dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
 # dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset")
 # dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset_2d")
 
@@ -23,6 +23,7 @@ class ExpectationMaximization:
     ):
         self.data = data
         self.dimensions = dimensions
+        self.elements_dimensions = elements_dimensions
         self.elements_product = np.prod(elements_dimensions)
         self.theta_M = np.full(elements_dimensions, 1 / self.elements_product)
         self.theta_U = np.full(elements_dimensions, 1 / self.elements_product)
@@ -34,9 +35,10 @@ class ExpectationMaximization:
             elements_dimensions)][::-1]
         self.geo_dist_M = self.create_geo_dist(
             self.geo_list_M, elements_dimensions)
-        # print(self.geo_dist_M)
+        print(self.geo_dist_M)
         self.geo_dist_U = self.create_geo_dist(
             self.geo_list_U, elements_dimensions)
+        self.distribution_spread = np.empty(elements_dimensions)
         # print(self.geo_dist_U)
         # self.geo_dist_M = self.geometric_dist(0.5)
         # self.geo_dist_U = self.geo_dist_M[::-1]
@@ -51,6 +53,7 @@ class ExpectationMaximization:
                 theta_value_U = self.theta_U[tuple(self.data[i])]
                 geo_dist_M = self.geo_dist_M[tuple(self.data[i])]
                 geo_dist_U = self.geo_dist_U[tuple(self.data[i])]
+                self.distribution_spread[tuple(self.data[i])] += 1
                 w = (theta_value_M * geo_dist_M) / (
                     (theta_value_M * geo_dist_M) + (
                         theta_value_U * geo_dist_U)
@@ -63,7 +66,7 @@ class ExpectationMaximization:
             # M-STEP
             t2 = pc()
             # print(t2-t1)
-            for i in range(len(dataset_values)):
+            for i in range(len(self.data)):
                 self.theta_M[tuple(self.data[i])] = (
                     self.theta_M[tuple(self.data[i])] + w_vector[i]
                 )
@@ -78,6 +81,7 @@ class ExpectationMaximization:
             # self.p_M = np.mean(w_vector)
             # self.p_U = 1 - self.p_M
         print(f"Theta_U \n {self.theta_U}")
+        #print(f"Distribution spread: \n {self.distribution_spread}")
         return self.theta_M
 
     # an issue with the geometric list of non-matches, geo_list_U, is that different values of element_dimensions-variable
@@ -104,8 +108,15 @@ class ExpectationMaximization:
         if age_included == True:
             pass
 
-    def sanity_check(self):
-        pass  # implement the sanity check from the paper
+    def bayes_conversion(self, theta_M):
+        dist = np.empty(self.elements_dimensions)
+        length = len(self.data)
+        for x, v in np.ndenumerate(dist):
+            dist[x] = (theta_M[x]*self.geo_dist_M[x]) / \
+                (self.distribution_spread[x]/length)
+            # dist[x] = (theta_M[x]*0.1) / \
+            #     (self.distribution_spread[x]/length)
+        return dist
 
 
 fn_feature = dataset["fn_score"]
@@ -128,5 +139,7 @@ dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 # TEST CLASS
 print(f"starting CLASS")
 em = ExpectationMaximization(dataset_values, 100, 3, [3, 4, 4])
-result = em.em_steps(500)
+result = em.em_steps(5)
 print(f"Theta_M: \n {result}")
+# bayes = em.bayes_conversion(result)
+# print(f"Bayes dist \n {bayes}")
