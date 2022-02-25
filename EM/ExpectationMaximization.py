@@ -98,8 +98,8 @@ class ExpectationMaximization:
                 theta_FN_U_1 = self.theta_FN_U[self.data[i][1]]
                 theta_LN_M_1 = self.theta_LN_M[self.data[i][2]]
                 theta_LN_U_1 = self.theta_LN_U[self.data[i][2]]
-                L = minimize(self.obj_func_L, x0=6, args=(
-                    theta_A_M_1, theta_A_U_1, theta_FN_M_1, theta_FN_U_1, theta_LN_M_1),  method='L-BFGS-B')
+                minimize(self.obj_func_L, x0=6, args=(theta_A_M_1, theta_A_U_1, theta_FN_M_1,
+                                                      theta_FN_U_1, theta_LN_M_1, theta_LN_U_1),  method='L-BFGS-B')
                 #     self.theta_M[tuple(self.data[i])] = (
                 #         self.theta_M[tuple(self.data[i])] + w_vector[i]
                 #     )
