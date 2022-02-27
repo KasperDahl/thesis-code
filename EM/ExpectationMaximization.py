@@ -6,9 +6,9 @@ from bisect import bisect_left
 from time import perf_counter as pc
 
 
-dataset = pd.read_csv(
-    "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
-# dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
+# dataset = pd.read_csv(
+#    "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
+dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
 # dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset")
 # dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset_2d")
 
@@ -38,6 +38,10 @@ class ExpectationMaximization:
         #     self.geo_list_M, elements_dimensions)
         # self.geo_dist_U = self.create_geo_dist(
         #     self.geo_list_U, elements_dimensions)
+
+        # INITIAL
+        self.pr_matches = np.random.rand(elements_dimensions)
+        self.pr_non_matches = np.random.rand(elements_dimensions)
 
         # NEW THETA ARRAYS - A=Age, FN=First name, LN=Last name
         self.theta_A_M = np.full(3, 1/elements_dimensions[0])
@@ -93,13 +97,20 @@ class ExpectationMaximization:
             # M-STEP
             for i in range(len(self.data)):
                 theta_A_M_1 = self.theta_A_M[self.data[i][0]]
-                theta_A_U_1 = self.theta_A_U[self.data[i][0]]
                 theta_FN_M_1 = self.theta_FN_M[self.data[i][1]]
-                theta_FN_U_1 = self.theta_FN_U[self.data[i][1]]
                 theta_LN_M_1 = self.theta_LN_M[self.data[i][2]]
+
+                theta_A_U_1 = self.theta_A_U[self.data[i][0]]
+                theta_FN_U_1 = self.theta_FN_U[self.data[i][1]]
                 theta_LN_U_1 = self.theta_LN_U[self.data[i][2]]
-                minimize(self.obj_func_L, x0=6, args=(theta_A_M_1, theta_A_U_1, theta_FN_M_1,
-                                                      theta_FN_U_1, theta_LN_M_1, theta_LN_U_1),  method='L-BFGS-B')
+
+                self.pr_matches_1 = minimize(self.L_M, x0=self.pr_matches, args=(w_vector[i], theta_A_M_1, theta_FN_M_1,
+                                                                                 theta_LN_M_1),  method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
+                self.pr_non_matches_1 = minimize(self.L_U, x0=self.non_pr_matches, args=(w_vector[i], theta_A_U_1, theta_FN_U_1,
+                                                                                         theta_LN_U_1),  method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
+
+                self.pr_matches = self.pr_matches_1
+                self.pr_non_matches = self.pr_non_matches_1
                 #     self.theta_M[tuple(self.data[i])] = (
                 #         self.theta_M[tuple(self.data[i])] + w_vector[i]
                 #     )
@@ -113,32 +124,35 @@ class ExpectationMaximization:
 
         return 1
 
-    def obj_func_L(self, A_M, A_U, FN_M, FN_U, LN_M, LN_U):
-        return A_M+(1-A_U)+FN_M+(1-FN_U)+LN_M+(1-LN_U)
+    def L_M(self, x, w, fn, ln, a):
+        return w(fn*(1-x)+ln*(1-x)+a*(1-x))
 
-    def bayes_conversion(self, theta_M):
-        dist = np.empty(self.elements_dimensions)
-        length = len(self.data)
-        for x, v in np.ndenumerate(dist):
-            dist[x] = (theta_M[x]*self.geo_dist_M[x]) / \
-                ((theta_M[x]*self.geo_dist_M[x]) +
-                 (self.theta_U[x]*self.geo_dist_U[x]))
-        return dist
+    def L_U(self, x, w, fn, ln, a):
+        return (1-w)(fn*(1-x)+ln*(1-x)+a*(1-x))
+
+    # def bayes_conversion(self, theta_M):
+    #     dist = np.empty(self.elements_dimensions)
+    #     length = len(self.data)
+    #     for x, v in np.ndenumerate(dist):
+    #         dist[x] = (theta_M[x]*self.geo_dist_M[x]) /
+    #         ((theta_M[x]*self.geo_dist_M[x]) +
+    #          (self.theta_U[x]*self.geo_dist_U[x]))
+    #     return dist
 
     # an issue with the geometric list of non-matches, geo_list_U, is that different values of element_dimensions-variable
     # will affect the creation since the reversed list is based on the value of highest element in the list below
     # The list below is also not generalized
-    # def geometric_dist(self, p):
-    #     list = [p, (1-p)*p, (1-p)**2*p, (1-p)**3*p]
-    #     return list
+    def geometric_dist(self, p):
+        list = [p, (1-p)*p, (1-p)**2*p, (1-p)**3]
+        return list
 
-    # def create_geo_dist(self, geo_list, elements_dimensions):
-    #     geo_array = np.ones(elements_dimensions)
-    #     it = np.nditer(geo_array, flags=['multi_index'])
-    #     for x in it:
-    #         for y in it.multi_index:
-    #             geo_array[it.multi_index] = geo_array[it.multi_index] * geo_list[y]
-    #     return geo_array
+    def create_geo_dist(self, geo_list, elements_dimensions):
+        geo_array = np.ones(elements_dimensions)
+        it = np.nditer(geo_array, flags=['multi_index'])
+        for x in it:
+            for y in it.multi_index:
+                geo_array[it.multi_index] = geo_array[it.multi_index] * geo_list[y]
+        return geo_array
 
     # def weighted_p(self, tuple, geo_dist):
     #     a, b = tuple
