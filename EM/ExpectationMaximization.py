@@ -17,118 +17,69 @@ class ExpectationMaximization:
     def __init__(
         self,
         data,
-        match_guess,
-        dimensions,
-        elements_dimensions,
-        independence=False,
     ):
         self.data = data
-        self.dimensions = dimensions
-        self.elements_dimensions = elements_dimensions
-        self.elements_product = np.prod(elements_dimensions)
-        self.theta_M = np.full(elements_dimensions, 1 / self.elements_product)
-        self.theta_U = np.full(elements_dimensions, 1 / self.elements_product)
-        self.p_M = match_guess / len(data)
-        self.p_U = 1 - self.p_M
-        # creation of geometric distribution arrays for both clusters
-        # self.geo_list_M = self.geometric_dist(0.95)
-        # self.geo_list_U = self.geo_list_M[0:max(
-        #     elements_dimensions)][::-1]
-        # self.geo_dist_M = self.create_geo_dist(
-        #     self.geo_list_M, elements_dimensions)
-        # self.geo_dist_U = self.create_geo_dist(
-        #     self.geo_list_U, elements_dimensions)
-
-        # INITIAL
-        self.pr_matches = np.random.rand(elements_dimensions)
-        self.pr_non_matches = np.random.rand(elements_dimensions)
-
-        # NEW THETA ARRAYS - A=Age, FN=First name, LN=Last name
-        self.theta_A_M = np.full(3, 1/elements_dimensions[0])
-        self.theta_A_U = np.full(3, 1/elements_dimensions[0])
-        self.theta_FN_M = np.full(4, 1/elements_dimensions[1])
-        self.theta_FN_U = np.full(4, 1/elements_dimensions[1])
-        self.theta_LN_M = np.full(4, 1/elements_dimensions[2])
-        self.theta_LN_U = np.full(4, 1/elements_dimensions[2])
-
-        # GEOMETRIC DISTRIBUTIONS
-        self.p = 0.95
-        self.geo_age_M = [self.p, (1-self.p)*self.p, (1-self.p)**2]
-        self.geo_age_U = self.geo_age_M[::-1]
-        self.geo_names_M = [
-            self.p, (1-self.p)*self.p, (1-self.p)**2*self.p, (1-self.p)**3]
-        self.geo_names_U = self.geo_names_M[::-1]
+        self.P_A_M = self.P_FN_M = self.P_LN_M = 0.5
+        self.P_A_U = self.P_FN_U = self.P_LN_U = 0.5
 
     def em_steps(self, iterations=100):
         for i in range(iterations):
             w_vector = np.zeros(len(self.data))
             # E-STEP
             for i in range(len(self.data)):
-                # The three feature values from the data are split and for each of them the associated values
-                # from the respective theta array are found and multiplied with the respective geometric distribution value;
+                # The three P values are multiplied with the respective geometric distribution value based on their feature value;
                 # these variables are then used to find w for those given feature values
-                p_A_M = self.theta_A_M[self.data[i][0]] * \
-                    self.geo_age_M[self.data[i][0]]
-                p_A_U = self.theta_A_U[self.data[i][0]] * \
-                    self.geo_age_U[self.data[i][0]]
-                p_FN_M = self.theta_FN_M[self.data[i]
-                                         [1]]*self.geo_names_M[self.data[i][1]]
-                p_FN_U = self.theta_FN_U[self.data[i]
-                                         [1]]*self.geo_names_U[self.data[i][1]]
-                p_LN_M = self.theta_LN_M[self.data[i]
-                                         [2]]*self.geo_names_M[self.data[i][2]]
-                p_LN_U = self.theta_LN_U[self.data[i]
-                                         [2]]*self.geo_names_U[self.data[i][2]]
+                p_A_M = self.geo_dist_age(
+                    self.P_A_M, self.data[i][0])
+                p_A_U = self.geo_dist_age(
+                    self.P_A_U, self.data[i][0], matches=False)
+                p_FN_M = self.geo_dist_names(
+                    self.P_FN_M, self.data[i][1])
+                p_FN_U = self.geo_dist_names(
+                    self.P_FN_U, self.data[i][1], matches=False)
+                p_LN_M = self.geo_dist_names(
+                    self.P_LN_M, self.data[i][2])
+                p_LN_U = self.geo_dist_names(
+                    self.P_LN_U, self.data[i][2], matches=False)
 
                 w = (p_A_M*p_FN_M*p_LN_M) / \
                     ((p_A_M*p_FN_M*p_LN_M)+(p_A_U*p_FN_U*p_LN_U))
                 w_vector[i] = w
 
-                # theta_value_M = self.theta_M[tuple(self.data[i])]
-                # theta_value_U = self.theta_U[tuple(self.data[i])]
-                # geo_dist_M = self.geo_dist_M[tuple(self.data[i])]
-                # geo_dist_U = self.geo_dist_U[tuple(self.data[i])]
-                # w = (theta_value_M * geo_dist_M) / (
-                #     (theta_value_M * geo_dist_M) + (
-                #         theta_value_U * geo_dist_U)
-                # )
-                # w_vector[i] = w
-            # print(w_vector)
-            # M-STEP
-            for i in range(len(self.data)):
-                theta_A_M_1 = self.theta_A_M[self.data[i][0]]
-                theta_FN_M_1 = self.theta_FN_M[self.data[i][1]]
-                theta_LN_M_1 = self.theta_LN_M[self.data[i][2]]
+            # remove for loop
+            # Run minize instead
+            # Loop inside the objective function
 
-                theta_A_U_1 = self.theta_A_U[self.data[i][0]]
-                theta_FN_U_1 = self.theta_FN_U[self.data[i][1]]
-                theta_LN_U_1 = self.theta_LN_U[self.data[i][2]]
+            x_M = [self.P_A_M, self.P_FN_M, self.P_LN_M]
+            x_U = [self.P_A_U, self.P_FN_U, self.P_LN_U]
 
-                self.pr_matches_1 = minimize(self.L_M, x0=self.pr_matches, args=(w_vector[i], theta_A_M_1, theta_FN_M_1,
-                                                                                 theta_LN_M_1),  method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
-                self.pr_non_matches_1 = minimize(self.L_U, x0=self.non_pr_matches, args=(w_vector[i], theta_A_U_1, theta_FN_U_1,
-                                                                                         theta_LN_U_1),  method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
+            x_M_1 = minimize(self.L_M, x0=x_M, args=(self.data, w_vector),
+                             method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
+            x_U_1 = minimize(self.L_M, x0=x_U, args=(self.data, w_vector),
+                             method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
 
-                self.pr_matches = self.pr_matches_1
-                self.pr_non_matches = self.pr_non_matches_1
-                #     self.theta_M[tuple(self.data[i])] = (
-                #         self.theta_M[tuple(self.data[i])] + w_vector[i]
-                #     )
-                #     self.theta_U[tuple(self.data[i])] = self.theta_U[
-                #         tuple(self.data[i])
-                #     ] + (1 - w_vector[i])
+            self.P_A_M = x_M_1[0]
+            self.P_FN_M = x_M_1[1]
+            self.P_LN_M = x_M_1[2]
 
-                # # Normalize theta_M and theta_U
-                # self.theta_M = self.theta_M / self.theta_M.sum()
-                # self.theta_U = self.theta_U / self.theta_U.sum()
+            self.P_A_U = x_U_1[0]
+            self.P_FN_U = x_U_1[1]
+            self.P_LN_U = x_U_1[2]
 
         return 1
 
-    def L_M(self, x, w, fn, ln, a):
-        return w(fn*(1-x)+ln*(1-x)+a*(1-x))
+    def L_M(self, x, data, w_vector):
+        log_p_a = np.log(x[0]+x[0]**2+x[0]**3)
+        log_p_f = np.log(x[1]+x[1]**2+x[1]**3+x[1]**4)
+        log_p_l = np.log(x[2]+x[2]**2+x[2]**3+x[2]**4)
+        for i in range(len(data)):
+            w_vector[i]*(data[i][0]*np.log(x[0])-log_p_a+data[i][1]
+                         * np.log(x[1])-log_p_f+data[i][2]*np.log(x[2])-log_p_l)
+        return 1
 
-    def L_U(self, x, w, fn, ln, a):
-        return (1-w)(fn*(1-x)+ln*(1-x)+a*(1-x))
+        # pass the dataset and iterate over the training set and pull out the relevant values
+        # Inside the objective function I can compute log_p_f, log_p_l, log_p_a initially in the objective function
+        # I can also precompute the
 
     # def bayes_conversion(self, theta_M):
     #     dist = np.empty(self.elements_dimensions)
@@ -139,25 +90,33 @@ class ExpectationMaximization:
     #          (self.theta_U[x]*self.geo_dist_U[x]))
     #     return dist
 
-    # an issue with the geometric list of non-matches, geo_list_U, is that different values of element_dimensions-variable
-    # will affect the creation since the reversed list is based on the value of highest element in the list below
-    # The list below is also not generalized
-    def geometric_dist(self, p):
-        list = [p, (1-p)*p, (1-p)**2*p, (1-p)**3]
-        return list
+    # function to calculate geometric distribution in the E-step
+    # p is the given probability, k is the feature value
+    def geo_dist_names(self, p, k, matches=True):
+        if not matches:
+            k = 3 - k
+        return (p**(1+k))/(p+p**2+p**3+p**4)
 
-    def create_geo_dist(self, geo_list, elements_dimensions):
-        geo_array = np.ones(elements_dimensions)
-        it = np.nditer(geo_array, flags=['multi_index'])
-        for x in it:
-            for y in it.multi_index:
-                geo_array[it.multi_index] = geo_array[it.multi_index] * geo_list[y]
-        return geo_array
+    def geo_dist_age(self, p, k, matches=True):
+        if not matches:
+            k = 3 - k
+        return (p**(1+k))/(p+p**2+p**3)
 
-    # def weighted_p(self, tuple, geo_dist):
-    #     a, b = tuple
-    #     p = geo_dist[a] * geo_dist[b]
-    #     return p
+    # def geo_dist_names(self, p, k, matches=True):
+    #     sum = 0
+    #     for i in range(1, 5):
+    #         sum += p**i
+    #     if not matches:
+    #         k = 3 - k
+    #     return (p**(1+k))/sum
+
+    # def geo_dist_age(self, p, k, matches=True):
+    #     sum = 0
+    #     for i in range(1, 4):
+    #         sum += p**i
+    #     if not matches:
+    #         k = 2 - k
+    #     return (p**(1+k))/sum
 
 
 fn_feature = dataset["fn_score"]
@@ -179,8 +138,8 @@ dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 
 # TEST CLASS
 print(f"starting CLASS")
-em = ExpectationMaximization(dataset_values, 2200, 3, [3, 4, 4])
-result = em.em_steps(10)
+em = ExpectationMaximization(dataset_values)
+result = em.em_steps(1)
 print(f"Theta_M: \n {result}")
 # bayes = em.bayes_conversion(result)
 # print(f"Bayes dist \n {bayes}")
