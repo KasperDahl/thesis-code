@@ -6,9 +6,9 @@ from bisect import bisect_left
 from time import perf_counter as pc
 
 
-# dataset = pd.read_csv(
-#    "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
-dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
+dataset = pd.read_csv(
+    "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
+# dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
 # dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset")
 # dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset_2d")
 
@@ -52,18 +52,20 @@ class ExpectationMaximization:
             x_U = [self.P_A_U, self.P_FN_U, self.P_LN_U]
 
             res_M = minimize(self.L_M, x0=x_M, args=(self.data, w_vector),
-                             method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
+                             method='L-BFGS-B', bounds=[(0.001, 1), (0.001, 1), (0.001, 1)])
             res_U = minimize(self.L_M, x0=x_U, args=(self.data, w_vector, 1),
-                             method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
+                             method='L-BFGS-B', bounds=[(0.001, 1), (0.001, 1), (0.001, 1)])
 
-            print(res_M)
-            # self.P_A_M = x_M_1[0]
-            # self.P_FN_M = x_M_1[1]
-            # self.P_LN_M = x_M_1[2]
+            print(f"x for matches: {res_M.x}")
+            print(f"x for non-matches: {res_U.x}")
 
-            # self.P_A_U = x_U_1[0]
-            # self.P_FN_U = x_U_1[1]
-            # self.P_LN_U = x_U_1[2]
+            self.P_A_M = res_M.x[0]
+            self.P_FN_M = res_M.x[1]
+            self.P_LN_M = res_M.x[2]
+
+            self.P_A_U = res_U.x[0]
+            self.P_FN_U = res_U.x[1]
+            self.P_LN_U = res_U.x[2]
 
         return 1
 
@@ -139,7 +141,7 @@ dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 # TEST CLASS
 print(f"starting CLASS")
 em = ExpectationMaximization(dataset_values)
-result = em.em_steps(1)
-print(f"Theta_M: \n {result}")
+result = em.em_steps(5)
+#print(f"Theta_M: \n {result}")
 # bayes = em.bayes_conversion(result)
 # print(f"Bayes dist \n {bayes}")

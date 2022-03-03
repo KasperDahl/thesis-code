@@ -10,6 +10,7 @@ bimodial_dist_test.ipynb
 ExpectationMaximization2.py
 ExpectationMaximization3.py
 ExpectationMaximizationAbra.py
+EM_Prior_Geo_Dist.py
 
 # folders
 data/
