@@ -46,36 +46,36 @@ class ExpectationMaximization:
                     ((p_A_M*p_FN_M*p_LN_M)+(p_A_U*p_FN_U*p_LN_U))
                 w_vector[i] = w
 
-            # remove for loop
-            # Run minize instead
-            # Loop inside the objective function
+            # M-STEP
 
             x_M = [self.P_A_M, self.P_FN_M, self.P_LN_M]
             x_U = [self.P_A_U, self.P_FN_U, self.P_LN_U]
 
-            x_M_1 = minimize(self.L_M, x0=x_M, args=(self.data, w_vector),
+            res_M = minimize(self.L_M, x0=x_M, args=(self.data, w_vector),
                              method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
-            x_U_1 = minimize(self.L_M, x0=x_U, args=(self.data, w_vector),
+            res_U = minimize(self.L_M, x0=x_U, args=(self.data, w_vector, 1),
                              method='L-BFGS-B', bounds=[(0, 1), (0, 1), (0, 1)])
 
-            self.P_A_M = x_M_1[0]
-            self.P_FN_M = x_M_1[1]
-            self.P_LN_M = x_M_1[2]
+            print(res_M)
+            # self.P_A_M = x_M_1[0]
+            # self.P_FN_M = x_M_1[1]
+            # self.P_LN_M = x_M_1[2]
 
-            self.P_A_U = x_U_1[0]
-            self.P_FN_U = x_U_1[1]
-            self.P_LN_U = x_U_1[2]
+            # self.P_A_U = x_U_1[0]
+            # self.P_FN_U = x_U_1[1]
+            # self.P_LN_U = x_U_1[2]
 
         return 1
 
-    def L_M(self, x, data, w_vector):
+    def L_M(self, x, data, w_vector, max=-1):
         log_p_a = np.log(x[0]+x[0]**2+x[0]**3)
         log_p_f = np.log(x[1]+x[1]**2+x[1]**3+x[1]**4)
         log_p_l = np.log(x[2]+x[2]**2+x[2]**3+x[2]**4)
+        sum = 0
         for i in range(len(data)):
-            w_vector[i]*(data[i][0]*np.log(x[0])-log_p_a+data[i][1]
-                         * np.log(x[1])-log_p_f+data[i][2]*np.log(x[2])-log_p_l)
-        return 1
+            sum += w_vector[i]*(data[i][0]*np.log(x[0])-log_p_a+data[i][1]
+                                * np.log(x[1])-log_p_f+data[i][2]*np.log(x[2])-log_p_l)
+        return max*sum
 
         # pass the dataset and iterate over the training set and pull out the relevant values
         # Inside the objective function I can compute log_p_f, log_p_l, log_p_a initially in the objective function
@@ -99,7 +99,7 @@ class ExpectationMaximization:
 
     def geo_dist_age(self, p, k, matches=True):
         if not matches:
-            k = 3 - k
+            k = 2 - k
         return (p**(1+k))/(p+p**2+p**3)
 
     # def geo_dist_names(self, p, k, matches=True):
