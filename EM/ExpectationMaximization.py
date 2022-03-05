@@ -67,7 +67,7 @@ class ExpectationMaximization:
             self.P_FN_U = res_U.x[1]
             self.P_LN_U = res_U.x[2]
 
-        return 1
+        return [self.P_A_M, self.P_FN_M, self.P_LN_M, self.P_A_U, self.P_FN_U, self.P_LN_U]
 
     def L_M(self, x, data, w_vector):
         log_p_a = np.log(x[0]+x[0]**2+x[0]**3)
@@ -89,19 +89,29 @@ class ExpectationMaximization:
                                     * np.log(x[1])-log_p_f+(4-data[i][2])*np.log(x[2])-log_p_l)
         return -1*sum
 
-    # def L_U(self, x, data, w_vector):
+    # def L_M(self, x, data, w_vector):
+    #     length = len(data)
     #     log_p_a = np.log(x[0]+x[0]**2+x[0]**3)
     #     log_p_f = np.log(x[1]+x[1]**2+x[1]**3+x[1]**4)
     #     log_p_l = np.log(x[2]+x[2]**2+x[2]**3+x[2]**4)
-    #     sum = 0
-    #     for i in range(len(data)):
-    #         sum += (1-w_vector[i])*((data[i][0])*np.log(x[0])-log_p_a+(data[i][1])
-    #                                 * np.log(x[1])-log_p_f+(4-data[i][2])*np.log(x[2])-log_p_l)
+    #     a_i = data[np.arange(length)][0].sum()
+    #     f_i = data[np.arange(length)][1].sum()
+    #     l_i = data[np.arange(length)][2].sum()
+    #     sum = (w_vector[np.arange(length)].sum())*(a_i*np.log(x[0])-log_p_a+f_i *
+    #                                                np.log(x[1])-log_p_f+l_i*np.log(x[2])-log_p_l)
     #     return -1*sum
 
-        # pass the dataset and iterate over the training set and pull out the relevant values
-        # Inside the objective function I can compute log_p_f, log_p_l, log_p_a initially in the objective function
-        # I can also precompute the
+    # def L_U(self, x, data, w_vector):
+    #     length = len(data)
+    #     log_p_a = np.log(x[0]+x[0]**2+x[0]**3)
+    #     log_p_f = np.log(x[1]+x[1]**2+x[1]**3+x[1]**4)
+    #     log_p_l = np.log(x[2]+x[2]**2+x[2]**3+x[2]**4)
+    #     a_i = data[np.arange(length)][0].sum()
+    #     f_i = data[np.arange(length)][1].sum()
+    #     l_i = data[np.arange(length)][2].sum()
+    #     sum = (w_vector[np.arange(length)].sum())*((3-a_i)*np.log(x[0])-log_p_a+(4-f_i) *
+    #                                                np.log(x[1])-log_p_f+(4-l_i)*np.log(x[2])-log_p_l)
+    #     return -1*sum
 
     # def bayes_conversion(self, theta_M):
     #     dist = np.empty(self.elements_dimensions)
@@ -114,6 +124,7 @@ class ExpectationMaximization:
 
     # function to calculate geometric distribution in the E-step
     # p is the given probability, k is the feature value
+
     def geo_dist_names(self, p, k, matches=True):
         if not matches:
             k = 3 - k
@@ -140,6 +151,32 @@ class ExpectationMaximization:
     #         k = 2 - k
     #     return (p**(1+k))/sum
 
+# Right now it is a mess - mixing up dataset and data - it is not the bisected version I am using. The data received from the class
+# is a numpy array, not a dataframe. Probably the best idea is to add the probabilities to the numpy array and then turn it into
+# a dataframe.
+    def evaluation_bayes(self, data, results):
+        #probabilities = np.zeros(len(self.data))
+        probabilities = []
+        for i in range(len(data)):
+            P_A_M = self.geo_dist_age(results[0], data[i][0])
+            P_F_M = self.geo_dist_names(results[1], data[i][1])
+            P_L_M = self.geo_dist_names(results[2], data[i][2])
+            P_A_U = self.geo_dist_age(
+                results[3], data[i][0], matches=False)
+            P_F_U = self.geo_dist_names(
+                results[4], data[i][1], matches=False)
+            P_L_U = self.geo_dist_names(
+                results[5], data[i][2], matches=False)
+            prob = (P_A_M + P_F_M + P_L_M) / \
+                ((P_A_M + P_F_M + P_L_M)+(P_A_U + P_F_U + P_L_U))
+            probabilities.append(prob)
+        dataset = pd.read_csv(
+            "C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
+        dataset['EM probabilities'] = probabilities
+        dataset.to_csv(
+            "C:/thesis_code/Github/data/results_EM_Geo/junget_1850_1845_EM_Geo_results")
+        return probabilities
+
 
 fn_feature = dataset["fn_score"]
 ln_feature = dataset["ln_score"]
@@ -161,7 +198,7 @@ dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 # TEST CLASS
 print(f"starting CLASS")
 em = ExpectationMaximization(dataset_values)
-result = em.em_steps(10)
-# print(f"Theta_M: \n {result}")
-# bayes = em.bayes_conversion(result)
-# print(f"Bayes dist \n {bayes}")
+result = em.em_steps(7)
+print(f"Results: \n {result}")
+bayes = em.evaluation_bayes(dataset_values, result)
+print(f"Probability results: \n {bayes}")
