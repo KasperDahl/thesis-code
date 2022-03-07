@@ -113,15 +113,6 @@ class ExpectationMaximization:
     #                                                np.log(x[1])-log_p_f+(4-l_i)*np.log(x[2])-log_p_l)
     #     return -1*sum
 
-    # def bayes_conversion(self, theta_M):
-    #     dist = np.empty(self.elements_dimensions)
-    #     length = len(self.data)
-    #     for x, v in np.ndenumerate(dist):
-    #         dist[x] = (theta_M[x]*self.geo_dist_M[x]) /
-    #         ((theta_M[x]*self.geo_dist_M[x]) +
-    #          (self.theta_U[x]*self.geo_dist_U[x]))
-    #     return dist
-
     # function to calculate geometric distribution in the E-step
     # p is the given probability, k is the feature value
 
@@ -135,27 +126,7 @@ class ExpectationMaximization:
             k = 2 - k
         return (p**(1+k))/(p+p**2+p**3)
 
-    # def geo_dist_names(self, p, k, matches=True):
-    #     sum = 0
-    #     for i in range(1, 5):
-    #         sum += p**i
-    #     if not matches:
-    #         k = 3 - k
-    #     return (p**(1+k))/sum
-
-    # def geo_dist_age(self, p, k, matches=True):
-    #     sum = 0
-    #     for i in range(1, 4):
-    #         sum += p**i
-    #     if not matches:
-    #         k = 2 - k
-    #     return (p**(1+k))/sum
-
-# Right now it is a mess - mixing up dataset and data - it is not the bisected version I am using. The data received from the class
-# is a numpy array, not a dataframe. Probably the best idea is to add the probabilities to the numpy array and then turn it into
-# a dataframe.
-    def evaluation_bayes(self, data, results):
-        #probabilities = np.zeros(len(self.data))
+    def evaluation_bayes(self, data, results, data_b):
         probabilities = []
         for i in range(len(data)):
             P_A_M = self.geo_dist_age(results[0], data[i][0])
@@ -169,13 +140,10 @@ class ExpectationMaximization:
                 results[5], data[i][2], matches=False)
             prob = (P_A_M + P_F_M + P_L_M) / \
                 ((P_A_M + P_F_M + P_L_M)+(P_A_U + P_F_U + P_L_U))
-            probabilities.append(prob)
-        dataset = pd.read_csv(
-            "C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
-        dataset['EM probabilities'] = probabilities
-        dataset.to_csv(
-            "C:/thesis_code/Github/data/results_EM_Geo/junget_1850_1845_EM_Geo_results")
-        return probabilities
+            probabilities.append('%.4f' % (prob))
+        data_b['EM probabilities'] = probabilities
+        data_b.to_csv(
+            "C:/thesis_code/Github/data/results_EM_Geo/thy_parishes_1850_1845_EM_Geo_results", index=False)
 
 
 fn_feature = dataset["fn_score"]
@@ -191,6 +159,9 @@ def convert_JW(feature, breakpoints=[0.75, 0.88, 0.933], values=[3, 2, 1, 0]):
 dist_fn = [convert_JW(feature) for feature in fn_feature]
 dist_ln = [convert_JW(feature) for feature in ln_feature]
 
+data_bisect = pd.DataFrame(
+    {'age': dist_age, 'first name': dist_fn, 'last_name': dist_ln})
+
 dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 # dataset_values = np.array([dist_fn, dist_ln]).transpose()
 
@@ -198,7 +169,7 @@ dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 # TEST CLASS
 print(f"starting CLASS")
 em = ExpectationMaximization(dataset_values)
-result = em.em_steps(7)
-print(f"Results: \n {result}")
-bayes = em.evaluation_bayes(dataset_values, result)
-print(f"Probability results: \n {bayes}")
+results = em.em_steps(7)
+#print(f"Results: \n {results}")
+em.evaluation_bayes(dataset_values, results, data_bisect)
+#print(f"Probability results: \n {bayes}")
