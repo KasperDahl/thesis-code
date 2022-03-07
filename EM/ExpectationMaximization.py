@@ -6,9 +6,9 @@ from bisect import bisect_left
 from time import perf_counter as pc
 
 
-# dataset = pd.read_csv(
-#     "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
-dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
+dataset = pd.read_csv(
+    "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
+# dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
 # dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset")
 # dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset_2d")
 
@@ -17,10 +17,14 @@ class ExpectationMaximization:
     def __init__(
         self,
         data,
+        match_guess,
     ):
         self.data = data
         self.P_A_M = self.P_FN_M = self.P_LN_M = 0.5
         self.P_A_U = self.P_FN_U = self.P_LN_U = 0.5
+        self.p_M = match_guess / len(data)
+        print(self.p_M)
+        self.p_U = 1 - self.p_M
 
     def em_steps(self, iterations=100):
         for i in range(iterations):
@@ -42,11 +46,15 @@ class ExpectationMaximization:
                 p_LN_U = self.geo_dist_names(
                     self.P_LN_U, self.data[i][2], matches=False)
 
-                w = (p_A_M*p_FN_M*p_LN_M) / \
-                    ((p_A_M*p_FN_M*p_LN_M)+(p_A_U*p_FN_U*p_LN_U))
+                w = ((p_A_M*p_FN_M*p_LN_M)*self.p_M) / \
+                    (((p_A_M*p_FN_M*p_LN_M)*self.p_M) +
+                     ((p_A_U*p_FN_U*p_LN_U)*self.p_U))
                 w_vector[i] = w
 
             # M-STEP
+
+            self.p_M = np.mean(w_vector)
+            self.p_U = 1 - self.p_M
 
             x_M = [self.P_A_M, self.P_FN_M, self.P_LN_M]
             x_U = [self.P_A_U, self.P_FN_U, self.P_LN_U]
@@ -66,7 +74,7 @@ class ExpectationMaximization:
             self.P_A_U = res_U.x[0]
             self.P_FN_U = res_U.x[1]
             self.P_LN_U = res_U.x[2]
-
+        print(f"p_M: {self.p_M} \n p_U: {self.p_U}")
         return [self.P_A_M, self.P_FN_M, self.P_LN_M, self.P_A_U, self.P_FN_U, self.P_LN_U]
 
     def L_M(self, x, data, w_vector):
@@ -138,8 +146,13 @@ class ExpectationMaximization:
                 results[4], data[i][1], matches=False)
             P_L_U = self.geo_dist_names(
                 results[5], data[i][2], matches=False)
-            prob = (P_A_M + P_F_M + P_L_M) / \
-                ((P_A_M + P_F_M + P_L_M)+(P_A_U + P_F_U + P_L_U))
+            prob = ((P_A_M * P_F_M * P_L_M)*self.p_M) / \
+                (((P_A_M * P_F_M * P_L_M)*self.p_M) +
+                 ((P_A_U * P_F_U * P_L_U)*self.p_U))
+            # prob = (P_A_M * P_F_M * P_L_M) / \
+            #     ((P_A_M * P_F_M * P_L_M)+(P_A_U * P_F_U * P_L_U))
+            # prob = (P_A_M + P_F_M + P_L_M) / \
+            #     ((P_A_M + P_F_M + P_L_M)+(P_A_U + P_F_U + P_L_U))
             probabilities.append('%.4f' % (prob))
         data_b['EM probabilities'] = probabilities
         data_b.to_csv(
@@ -168,8 +181,9 @@ dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 
 # TEST CLASS
 print(f"starting CLASS")
-em = ExpectationMaximization(dataset_values)
+em = ExpectationMaximization(dataset_values, 2200)
 results = em.em_steps(7)
-#print(f"Results: \n {results}")
+#results = [0.001, 0.50860069, 0.001, 0.71309623, 0.21479873, 0.30512826]
+print(f"Results: \n {results}")
 em.evaluation_bayes(dataset_values, results, data_bisect)
 #print(f"Probability results: \n {bayes}")

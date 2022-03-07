@@ -14,6 +14,7 @@ EM_Prior_Geo_Dist.py
 EM_Abra_Independent.py
 ExpectationMaximization copy.py
 Evaluation_EM_Geo.py
+ExpectationMaximization_GEO_NO_PM.py
 
 # folders
 data/
