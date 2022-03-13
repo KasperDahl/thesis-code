@@ -8,7 +8,7 @@ df = []  # container for census data
 years = [1850]
 # columns to read
 cols = ["pa_id", "first_names", "family_names", "patronyms",
-        "sex", "age", "event_parish"]
+        "sex", "age", "event_parish", "birth_parish"]
 for year in years:
     f = "{}{}/census.csv".format(path, year)
     temp = pd.read_csv(f, sep=",", usecols=cols,
