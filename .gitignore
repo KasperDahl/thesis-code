@@ -19,4 +19,5 @@ ExpectationMaximization_GEO_NO_PM.py
 # folders
 data/
 plotting/plots/
+results_after_EM/
 .idea/

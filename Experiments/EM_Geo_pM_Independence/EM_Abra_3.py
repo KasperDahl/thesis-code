@@ -1,16 +1,23 @@
-from numpy.lib.npyio import savetxt
 import pandas as pd
 import numpy as np
 from scipy.optimize import minimize
 from bisect import bisect_left
-from time import perf_counter as pc
 
-
+# Junget 1850-1845
 dataset = pd.read_csv(
-    "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
-# dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
-# dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset")
-# dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/testset_2d")
+    "C:/thesis_code/Github/Experiments/data/junget_1850_1845")
+
+# Junget 1860-1850
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/junget_1860_1850")
+
+# Thy 1850-1845
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/thy_parishes_1850_1845")
+
+# Thy 1860-1850
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/thy_parishes_1860_1850")
 
 
 class ExpectationMaximization:
@@ -20,6 +27,7 @@ class ExpectationMaximization:
         match_guess,
     ):
         self.data = data
+        # Feature names: A = age, FN = first name, LN = last name(patronym)
         self.P_A_M = self.P_FN_M = self.P_LN_M = 0.5
         self.P_A_U = self.P_FN_U = self.P_LN_U = 0.5
         self.p_M = match_guess / len(data)
@@ -74,7 +82,7 @@ class ExpectationMaximization:
             self.P_A_U = res_U.x[0]
             self.P_FN_U = res_U.x[1]
             self.P_LN_U = res_U.x[2]
-        print(f"p_M: {self.p_M} \n p_U: {self.p_U}")
+        print(f"p_M: {self.p_M}")
         return [self.P_A_M, self.P_FN_M, self.P_LN_M, self.P_A_U, self.P_FN_U, self.P_LN_U]
 
     def L_M(self, x, data, w_vector):
@@ -110,7 +118,7 @@ class ExpectationMaximization:
             k = 2 - k
         return (p**(1+k))/(p+p**2+p**3)
 
-    def evaluation_bayes(self, data, results, data_b):
+    def evaluation_bayes(self, data, results, data_b, path):
         probabilities = []
         for i in range(len(data)):
             P_A_M = self.geo_dist_age(results[0], data[i][0])
@@ -124,14 +132,13 @@ class ExpectationMaximization:
                 results[5], data[i][2], matches=False)
             prob = ((P_A_M * P_F_M * P_L_M)*self.p_M) / (((P_A_M * P_F_M *
                                                            P_L_M)*self.p_M) + ((P_A_U * P_F_U * P_L_U)*self.p_U))
-            # prob = (P_A_M * P_F_M * P_L_M) / \
-            #     ((P_A_M * P_F_M * P_L_M)+(P_A_U * P_F_U * P_L_U))
-            # prob = (P_A_M + P_F_M + P_L_M) / \
-            #     ((P_A_M + P_F_M + P_L_M)+(P_A_U + P_F_U + P_L_U))
             probabilities.append('%.4f' % (prob))
         data_b['EM probabilities'] = probabilities
         data_b.to_csv(
-            "C:/thesis_code/Github/data/results_EM_Geo/thy_parishes_1850_1845_EM_Geo_results", index=False)
+            f"C:/thesis_code/Github/Experiments/results_after_EM/EM_Abra_3/{path}", index=False)
+        f = open(
+            "C:/thesis_code/Github/Experiments/results_after_EM/EM_Abra_3/p_values.txt", "a")
+        f.write(f"Results from {path}: {results}\n")
 
 
 fn_feature = dataset["fn_score"]
@@ -151,14 +158,12 @@ data_bisect = pd.DataFrame(
     {'age': dist_age, 'first name': dist_fn, 'last_name': dist_ln})
 
 dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
-# dataset_values = np.array([dist_fn, dist_ln]).transpose()
 
 
 # TEST CLASS
 print(f"starting CLASS")
-em = ExpectationMaximization(dataset_values, 2200)
+em = ExpectationMaximization(dataset_values, 250)
 results = em.em_steps(7)
-# results = [0.001, 0.50860069, 0.001, 0.71309623, 0.21479873, 0.30512826]
 print(f"Results: \n {results}")
-# em.evaluation_bayes(dataset_values, results, data_bisect)
-# print(f"Probability results: \n {bayes}")
+em.evaluation_bayes(dataset_values, results,
+                    data_bisect, "junget_1850_1845")
