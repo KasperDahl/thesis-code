@@ -84,7 +84,9 @@ def find_correct_links(df):
 
 def precision_recall(df):
     results = df['EM_results'].tolist()
+    print(df['EM_results'].value_counts())
     manual_links = df['manual_link'].tolist()
+    print(df['manual_link'].value_counts())
     print(precision_recall_fscore_support(
         manual_links, results, average='macro'))
     # print(results)
@@ -94,15 +96,15 @@ def precision_recall(df):
 # 1. No evaluation of links, so in many cases the EM-algorithm links one pa_id to more than one other pa_id
 
 df_pa_id = merge_pa_id(data)
-print(df_pa_id)
+# print(df_pa_id)
 no_conflicts = remove_conflicts(df_pa_id)
-print(no_conflicts)
+# print(no_conflicts)
 removed = remove_non_manual_links(no_conflicts)
 # # print(removed)
 manual = attach_manual_links(removed)
 # # print(manual)
 correct_links = find_correct_links(manual)
-# # print(correct_links)
+# print(correct_links)
 precision_recall(correct_links)
 
 # find_correct_links(test)
