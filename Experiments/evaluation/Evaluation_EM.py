@@ -14,23 +14,35 @@ class Evaluation:
         self.model = model
         self.place = place
         self.years = years
+        self.threshold_initial = threshold
         self.EM_results = pd.read_csv(
             f"C:/thesis_code/Github/Experiments/results_after_EM/{model}/{place}_{years}", usecols=["EM probabilities"])
         self.manual_links = pd.read_csv(
             f"C:/thesis_code/Github/data/manually_linked/{years}", usecols=["pa_id1", "pa_id2"])
         self.comp_space = pd.read_csv(
             f"C:/thesis_code/Github/Experiments/data/{place}_{years}", usecols=["pa_id_1", "pa_id_2"])
+
         # Create combined df with pa_id's and EM results
         self.merged_pa_id = self.comp_space.join(self.EM_results, how="outer")
+
+        # variables get updated in find_correct_links()-function
+        self.match_values = 0
+        #self.type_I_errors = self.type_II_errors = self.correct_matches = self.correct_non_matches = 0
+
+        # function calls
         self.threshold = self.probability_threshold(
             self.merged_pa_id, threshold)
         self.removed = self.remove_conflicts(self.threshold)
         self.only_manual = self.remove_non_manual_link(self.removed)
         self.attach_manual_id = self.attach_manual_links(self.only_manual)
         self.correct = self.find_correct_links(self.attach_manual_id)
+
+        # variables for size calculations (see string results)
+        self.size_original = len(self.EM_results)
+        self.size_after_conflicts = len(self.removed)
+        self.size_only_manuals = len(self.only_manual)
+
         self.precision_recall(self.correct)
-        # print(self.correct['Correct link'].value_counts())
-        # print(self.correct['Match'].value_counts())
 
     def probability_threshold(self, df, threshold):
         # Everything above the threshold will be calculated to a match (1), everything behold to a non-match(1)
@@ -52,7 +64,7 @@ class Evaluation:
         return only_manual_links
 
     def attach_manual_links(self, df):
-        # attach the pa_id of the correct manual link to df (OMFORMULER)
+        # attach the pa_id of the correct manual link to df
         pa_id_1 = df['pa_id_1'].tolist()
         only_links = self.manual_links.loc[self.manual_links['pa_id1'].isin(
             pa_id_1)]
@@ -71,9 +83,11 @@ class Evaluation:
             1), df['pa_id_2'].eq(df['pa_id2']) & df['Match'].eq(0)]
         values = [1, 2, 3]
         df['Correct link'] = np.select(conditions, values, default=0)
-        # df['Correct link'] = np.where(
-        #     (df['pa_id_2'] == df['pa_id2']) & (df['Match'] == 1), 1, 0)
-        # df.to_csv("C:/thesis_code/Github/Experiments/temp/junget_1850_1845")
+        self.match_values = df['Correct link'].value_counts()
+        # self.correct_non_matches = df['Correct link'].value_counts()[0]
+        # self.correct_matches = df['Correct link'].value_counts()[1]
+        # self.type_I_errors = df['Correct link'].value_counts()[2]
+        # self.type_II_errors = df['Correct link'].value_counts()[3]
         return df
 
     def precision_recall(self, df):
@@ -85,30 +99,45 @@ class Evaluation:
         results = df['Match'].tolist()
         pre_recall = precision_recall_fscore_support(
             manual_links, results, average='macro')
-        # print(pre_recall)
-        f = open("C:/thesis_code/Github/Experiments/evaluation_results/results", "a")
+        f = open(
+            f"C:/thesis_code/Github/Experiments/evaluation_results/{self.model}", "a")
         f.write(
-            f"\nModel: {self.model}, place: {self.place}, time: {self.years}\nPrecision-Recall-score: {pre_recall}\n")
-        # print(precision_recall_fscore_support(
-        #     manual_links, results, average='macro'))
+            f"\nModel: {self.model}, place: {self.place}, time: {self.years}, threshold: {self.threshold_initial} \
+            \nOriginal size: {self.size_original}, size after conflicts are removed: {self.size_after_conflicts}, percentage of original: {round(((self.size_after_conflicts/self.size_original)*100),2)}%,\
+            \nSize after manual links added: {self.size_only_manuals}, percentage of original: {round(((self.size_only_manuals/self.size_original)*100),2)}%,\
+            \nMatch values (0 = correct NON-matches, 1 = correct MATCHES, 2 = Type I errors (False positive), 3 = Type II errors (False negative)):    \
+            \n{self.match_values}  \
+            \nPrecision-Recall-score: {pre_recall}\n")
 
 
 Evaluation("junget", "1850_1845", "EM_Abra_3", 0.0001)
-Evaluation("junget", "1860_1850", "EM_Abra_3", 0.0001)
 Evaluation("thy_parishes", "1850_1845", "EM_Abra_3", 0.0001)
 Evaluation("thy_parishes", "1860_1850", "EM_Abra_3", 0.0001)
 
 Evaluation("junget", "1850_1845", "EM_Abra_5", 0.0001)
-Evaluation("junget", "1860_1850", "EM_Abra_5", 0.0001)
 Evaluation("thy_parishes", "1850_1845", "EM_Abra_5", 0.0001)
 Evaluation("thy_parishes", "1860_1850", "EM_Abra_5", 0.0001)
 
 Evaluation("junget", "1850_1845", "EM_Own_3", 0.5)
-Evaluation("junget", "1860_1850", "EM_Own_3", 0.5)
 Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.5)
 Evaluation("thy_parishes", "1860_1850", "EM_Own_3", 0.5)
 
+Evaluation("junget", "1850_1845", "EM_Own_3", 0.65)
+Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.65)
+Evaluation("thy_parishes", "1860_1850", "EM_Own_3", 0.65)
+
+Evaluation("junget", "1850_1845", "EM_Own_3", 0.80)
+Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.80)
+Evaluation("thy_parishes", "1860_1850", "EM_Own_3", 0.80)
+
 Evaluation("junget", "1850_1845", "EM_Own_5", 0.5)
-Evaluation("junget", "1860_1850", "EM_Own_5", 0.5)
 Evaluation("thy_parishes", "1850_1845", "EM_Own_5", 0.5)
 Evaluation("thy_parishes", "1860_1850", "EM_Own_5", 0.5)
+
+Evaluation("junget", "1850_1845", "EM_Own_5", 0.65)
+Evaluation("thy_parishes", "1850_1845", "EM_Own_5", 0.65)
+Evaluation("thy_parishes", "1860_1850", "EM_Own_5", 0.65)
+
+Evaluation("junget", "1850_1845", "EM_Own_5", 0.80)
+Evaluation("thy_parishes", "1850_1845", "EM_Own_5", 0.80)
+Evaluation("thy_parishes", "1860_1850", "EM_Own_5", 0.80)
