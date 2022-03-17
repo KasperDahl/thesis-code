@@ -4,8 +4,8 @@ from scipy.optimize import minimize
 from bisect import bisect_left
 
 # Junget 1850-1845
-dataset = pd.read_csv(
-    "C:/thesis_code/Github/Experiments/data/junget_1850_1845")
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/junget_1850_1845")
 
 # Junget 1860-1850
 # dataset = pd.read_csv(
@@ -18,6 +18,10 @@ dataset = pd.read_csv(
 # Thy 1860-1850
 # dataset = pd.read_csv(
 #     "C:/thesis_code/Github/Experiments/data/thy_parishes_1860_1850")
+
+# Manual 1850-1845
+dataset = pd.read_csv(
+    "C:/thesis_code/Github/Experiments/data/manual_1850_1845")
 
 
 class ExpectationMaximization:
@@ -162,8 +166,8 @@ dataset_values = np.array([dist_age, dist_fn, dist_ln]).transpose()
 
 # TEST CLASS
 print(f"starting CLASS")
-em = ExpectationMaximization(dataset_values, 250)
+em = ExpectationMaximization(dataset_values, 10000)
 results = em.em_steps(7)
 print(f"Results: \n {results}")
 em.evaluation_bayes(dataset_values, results,
-                    data_bisect, "junget_1850_1845")
+                    data_bisect, "manual_1850_1845")

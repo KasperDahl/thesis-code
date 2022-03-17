@@ -19,6 +19,7 @@ class Preprocessing:
             "birth_parish",
         ]
         self.temp = self.preparation()
+        # print(self.temp)
 
     def preparation(self):
         for year in self.years:
@@ -77,17 +78,18 @@ def compare(latest, earliest, path):
 
 
 latest = Preprocessing(['1850'])
-# p_latest = latest.specific_parishes(
-#     ["sevel", "selde", "thorum", "junget"], 1860)
+p_latest = latest.specific_parishes(
+    ["sevel", "selde", "thorum", "junget"], 1850)
 p_latest = latest.specific_parishes(
     ["junget"], 1850)
-# p_latest.to_csv("C:/thesis_code/Github/Experiments/data/thy1860")
+print(p_latest)
+# # p_latest.to_csv("C:/thesis_code/Github/Experiments/data/thy1860")
 
-earliest = Preprocessing(['1845'])
+# earliest = Preprocessing(['1845'])
+# # p_earliest = earliest.specific_parishes(
+# #     ["sevel", "selde", "thorum", "junget"], 1850)
 # p_earliest = earliest.specific_parishes(
-#     ["sevel", "selde", "thorum", "junget"], 1850)
-p_earliest = earliest.specific_parishes(
-    ["junget"], 1845)
-# print(p_earliest)
+#     ["junget"], 1845)
+# # print(p_earliest)
 
-compare = compare(p_latest, p_earliest, "junget_1850_1845")
+# compare = compare(p_latest, p_earliest, "junget_1850_1845")
