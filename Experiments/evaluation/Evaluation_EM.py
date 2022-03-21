@@ -90,6 +90,10 @@ class Evaluation:
         # self.type_II_errors = df['Correct link'].value_counts()[3]
         return df
 
+        # Below only used for confusion matrix:
+        # df.to_csv(
+        #     f"C:/thesis_code/Github/Experiments/plots/confusion_data/{self.place}_{self.years}_{self.model}", columns=['Match', 'Correct link'])
+
     def precision_recall(self, df):
         df['Correct link'] = np.where(
             df['Correct link'] == 3, 1, df['Correct link'])
@@ -110,14 +114,17 @@ class Evaluation:
             \nPrecision-Recall-score: {pre_recall}\n")
 
 
-# Evaluation("junget", "1850_1845", "EM_Abra_3", 0.0001)
+Evaluation("junget", "1850_1845", "EM_Abra_3", 0.0001)
 # Evaluation("thy_parishes", "1850_1845", "EM_Abra_3", 0.0001)
 # Evaluation("thy_parishes", "1860_1850", "EM_Abra_3", 0.0001)
-Evaluation("manual", "1850_1845", "EM_Abra_3", 0.0001)
+# Evaluation("manual", "1850_1845", "EM_Abra_3", 0.0001)
+# Evaluation("manual", "1860_1850", "EM_Abra_3", 0.0001)
 
 # Evaluation("junget", "1850_1845", "EM_Abra_5", 0.0001)
 # Evaluation("thy_parishes", "1850_1845", "EM_Abra_5", 0.0001)
 # Evaluation("thy_parishes", "1860_1850", "EM_Abra_5", 0.0001)
+# Evaluation("manual", "1850_1845", "EM_Abra_5", 0.0001)
+# Evaluation("manual", "1860_1850", "EM_Abra_5", 0.0001)
 
 # Evaluation("junget", "1850_1845", "EM_Own_3", 0.5)
 # Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.5)

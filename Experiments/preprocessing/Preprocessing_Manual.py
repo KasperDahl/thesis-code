@@ -77,6 +77,7 @@ manual_1860 = manual_1860_1850.merge(
     full_1860, how='inner', left_on='pa_id1', right_on='pa_id')
 manual_1860.drop(['pa_id', 'pa_id2'], axis=1, inplace=True)
 manual_1860['birth_year'] = 1860 - manual_1860['age'].astype(float)
+manual_1860.drop_duplicates(inplace=True, ignore_index=True)
 manual_1860.to_csv(
     "C:/thesis_code/Github/Experiments/data/manual_1860_1850_pa_id/1860")
 
@@ -84,6 +85,7 @@ manual_1850 = manual_1860_1850.merge(
     full_1850, how='inner', left_on='pa_id2', right_on='pa_id')
 manual_1850.drop(['pa_id1', 'pa_id'], axis=1, inplace=True)
 manual_1850['birth_year'] = 1850 - manual_1850['age'].astype(float)
+manual_1850.drop_duplicates(inplace=True, ignore_index=True)
 manual_1850.to_csv(
     "C:/thesis_code/Github/Experiments/data/manual_1860_1850_pa_id/1850")
 

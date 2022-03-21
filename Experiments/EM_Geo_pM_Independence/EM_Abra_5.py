@@ -16,8 +16,16 @@ from bisect import bisect_left
 #     "C:/thesis_code/Github/Experiments/data/thy_parishes_1850_1845")
 
 # Thy 1860-1850
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/thy_parishes_1860_1850")
+
+# Manual 1850-1845
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/manual_1850_1845")
+
+# Manual 1860-1850
 dataset = pd.read_csv(
-    "C:/thesis_code/Github/Experiments/data/thy_parishes_1860_1850")
+    "C:/thesis_code/Github/Experiments/data/manual_1860_1850")
 
 
 class ExpectationMaximization:
@@ -191,8 +199,8 @@ dataset_values = np.array(
 
 # TEST CLASS
 print(f"starting CLASS")
-em = ExpectationMaximization(dataset_values, 2200)
+em = ExpectationMaximization(dataset_values, 9600)
 results = em.em_steps(7)
 print(f"Results: \n {results}")
 em.evaluation_bayes(dataset_values, results,
-                    data_bisect, "thy_parishes_1860_1850")
+                    data_bisect, "manual_1860_1850")

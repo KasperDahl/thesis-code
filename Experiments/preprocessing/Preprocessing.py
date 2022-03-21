@@ -77,17 +77,19 @@ def compare(latest, earliest, path):
         f"C:/thesis_code/Github/Experiments/data/{path}")
 
 
-latest = Preprocessing(['1850'])
+latest = Preprocessing(['1860'])
 p_latest = latest.specific_parishes(
-    ["sevel", "selde", "thorum", "junget"], 1850)
-p_latest = latest.specific_parishes(
-    ["junget"], 1850)
-print(p_latest)
+    ["sevel", "selde", "thorum", "junget"], 1860)
+print(len(p_latest))
+# p_latest = latest.specific_parishes(
+#     ["junget"], 1850)
+# print(p_latest)
 # # p_latest.to_csv("C:/thesis_code/Github/Experiments/data/thy1860")
 
-# earliest = Preprocessing(['1845'])
-# # p_earliest = earliest.specific_parishes(
-# #     ["sevel", "selde", "thorum", "junget"], 1850)
+earliest = Preprocessing(['1850'])
+p_earliest = earliest.specific_parishes(
+    ["sevel", "selde", "thorum", "junget"], 1850)
+print(len(p_earliest))
 # p_earliest = earliest.specific_parishes(
 #     ["junget"], 1845)
 # # print(p_earliest)

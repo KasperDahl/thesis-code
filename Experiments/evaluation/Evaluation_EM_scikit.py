@@ -111,7 +111,9 @@ class Evaluation:
             \nPrecision-Recall-score: {pre_recall}\n")
 
 
-#Evaluation("junget", "1850_1845", "EM_scikit_3", 2)
-Evaluation("junget", "1850_1845", "EM_scikit_3", 3, 2)
-# Evaluation("thy_parishes", "1850_1845", "EM_scikit_3")
-# Evaluation("thy_parishes", "1860_1850", "EM_scikit_3")
+Evaluation("junget", "1850_1845", "EM_scikit_5", 2, 0)
+Evaluation("junget", "1850_1845", "EM_scikit_5", 3, 2)
+Evaluation("thy_parishes", "1850_1845", "EM_scikit_5", 2, 1)
+Evaluation("thy_parishes", "1850_1845", "EM_scikit_5", 3, 2)
+Evaluation("thy_parishes", "1860_1850", "EM_scikit_5", 2, 0)
+Evaluation("thy_parishes", "1860_1850", "EM_scikit_5", 3, 1)
