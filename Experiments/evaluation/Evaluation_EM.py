@@ -44,6 +44,12 @@ class Evaluation:
 
         self.precision_recall(self.correct)
 
+        # temp = self.EM_results["EM probabilities"].value_counts()
+        # f = open(
+        #     f"C:/thesis_code/Github/Experiments/probability_spread", "a")
+        # f.write(
+        #     f"\nProbability spread for {self.model} in {self.place} {self.years}\n{temp}\n")
+
     def probability_threshold(self, df, threshold):
         # Everything above the threshold will be calculated to a match (1), everything behold to a non-match(1)
         df.loc[df['EM probabilities'] >= threshold, 'Match'] = 1
@@ -65,6 +71,7 @@ class Evaluation:
 
     def attach_manual_links(self, df):
         # attach the pa_id of the correct manual link to df
+        # OBS!! There is a weird error for manual links - more
         pa_id_1 = df['pa_id_1'].tolist()
         only_links = self.manual_links.loc[self.manual_links['pa_id1'].isin(
             pa_id_1)]
@@ -115,16 +122,16 @@ class Evaluation:
 
 
 Evaluation("junget", "1850_1845", "EM_Abra_3", 0.0001)
-# Evaluation("thy_parishes", "1850_1845", "EM_Abra_3", 0.0001)
-# Evaluation("thy_parishes", "1860_1850", "EM_Abra_3", 0.0001)
-# Evaluation("manual", "1850_1845", "EM_Abra_3", 0.0001)
-# Evaluation("manual", "1860_1850", "EM_Abra_3", 0.0001)
+Evaluation("thy_parishes", "1850_1845", "EM_Abra_3", 0.0001)
+Evaluation("thy_parishes", "1860_1850", "EM_Abra_3", 0.0001)
+Evaluation("manual", "1850_1845", "EM_Abra_3", 0.0001)
+Evaluation("manual", "1860_1850", "EM_Abra_3", 0.0001)
 
-# Evaluation("junget", "1850_1845", "EM_Abra_5", 0.0001)
-# Evaluation("thy_parishes", "1850_1845", "EM_Abra_5", 0.0001)
-# Evaluation("thy_parishes", "1860_1850", "EM_Abra_5", 0.0001)
-# Evaluation("manual", "1850_1845", "EM_Abra_5", 0.0001)
-# Evaluation("manual", "1860_1850", "EM_Abra_5", 0.0001)
+Evaluation("junget", "1850_1845", "EM_Abra_5", 0.0001)
+Evaluation("thy_parishes", "1850_1845", "EM_Abra_5", 0.0001)
+Evaluation("thy_parishes", "1860_1850", "EM_Abra_5", 0.0001)
+Evaluation("manual", "1850_1845", "EM_Abra_5", 0.0001)
+Evaluation("manual", "1860_1850", "EM_Abra_5", 0.0001)
 
 # Evaluation("junget", "1850_1845", "EM_Own_3", 0.5)
 # Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.5)
