@@ -32,17 +32,18 @@ class Evaluation:
         # function calls
         self.threshold = self.probability_threshold(
             self.merged_pa_id, threshold)
-        self.removed = self.remove_conflicts(self.threshold)
-        self.only_manual = self.remove_non_manual_link(self.removed)
+        #self.removed = self.remove_conflicts(self.threshold)
+        self.resolved = self.resolve_conflicts(self.threshold)
+        self.only_manual = self.remove_non_manual_link(self.resolved)
         self.attach_manual_id = self.attach_manual_links(self.only_manual)
         self.correct = self.find_correct_links(self.attach_manual_id)
 
         # variables for size calculations (see string results)
         self.size_original = len(self.EM_results)
-        self.size_after_conflicts = len(self.removed)
+        self.size_after_conflicts = len(self.resolved)
         self.size_only_manuals = len(self.only_manual)
 
-        # self.precision_recall(self.correct)
+        self.precision_recall(self.correct)
 
         # temp = self.EM_results["EM probabilities"].value_counts()
         # f = open(
@@ -57,11 +58,21 @@ class Evaluation:
         df['Match'] = df['Match'].astype(int)
         return df
 
-    def remove_conflicts(self, df):
-        # remove all pairs for conflicting matches, meaning when the EM links the individual more than once
-        grouped = df.groupby('pa_id_1')
-        filtered = grouped.filter(lambda x: (x['Match'].sum()) <= 1)
-        return filtered
+    def resolve_conflicts(self, df):
+        # if one individual is matched to more than one individual
+        # print(df.head(150))
+        max_proba = df.groupby("pa_id_1")["EM probabilities"].transform(
+            lambda x: x.eq(x.max()))
+        mask_unique = df.groupby(["pa_id_1", "EM probabilities"])[
+            "EM probabilities"].transform(lambda x: len(x) == 1)
+        df.loc[:, "Match"] = 1 * (max_proba & mask_unique)
+        return df
+
+    # def remove_conflicts(self, df):
+    #     # remove all pairs for conflicting matches, meaning when the EM links the individual more than once
+    #     grouped = df.groupby('pa_id_1')
+    #     filtered = grouped.filter(lambda x: (x['Match'].sum()) <= 1)
+    #     return filtered
 
     def remove_non_manual_link(self, df):
         # remove the links from the comparison space that have not been manually linked
@@ -71,7 +82,6 @@ class Evaluation:
 
     def attach_manual_links(self, df):
         # attach the pa_id of the correct manual link to df
-        # OBS!! There is a weird error for manual links - more
         pa_id_1 = df['pa_id_1'].tolist()
         only_links = self.manual_links.loc[self.manual_links['pa_id1'].isin(
             pa_id_1)]
@@ -92,32 +102,26 @@ class Evaluation:
         values = [1, 2, 3]
         df['Correct link'] = np.select(conditions, values, default=0)
         self.match_values = df['Correct link'].value_counts()
-        # self.correct_non_matches = df['Correct link'].value_counts()[0]
-        # self.correct_matches = df['Correct link'].value_counts()[1]
-        # self.type_I_errors = df['Correct link'].value_counts()[2]
-        # self.type_II_errors = df['Correct link'].value_counts()[3]
-
         # Below only used for Qualitative Analysis
         df.to_csv(
             f"C:/thesis_code/Github/Experiments/analysis/data/{self.place}_{self.years}_{self.model}", columns=['pa_id_1', 'pa_id_2', 'Correct link'], index=False)
 
         return df
 
-        # Below only used for confusion matrix:
-        # df.to_csv(
-        #     f"C:/thesis_code/Github/Experiments/plots/confusion_data/{self.place}_{self.years}_{self.model}", columns=['Match', 'Correct link'])
-
     def precision_recall(self, df):
         df['Correct link'] = np.where(
             df['Correct link'] == 3, 1, df['Correct link'])
         df['Correct link'] = np.where(
             df['Correct link'] == 2, 0, df['Correct link'])
+        # Below only used for confusion matrix
+        # df.to_csv(
+        #     f"C:/thesis_code/Github/Experiments/plots/confusion_data/{self.place}_{self.years}_{self.model}", columns=['Match', 'Correct link'])
         manual_links = df['Correct link'].tolist()
         results = df['Match'].tolist()
         pre_recall = precision_recall_fscore_support(
             manual_links, results, average='macro')
         f = open(
-            f"C:/thesis_code/Github/Experiments/evaluation_results/{self.model}", "a")
+            f"C:/thesis_code/Github/Experiments/evaluation_results/NO_CONFLICT_{self.model}", "a")
         f.write(
             f"\nModel: {self.model}, place: {self.place}, time: {self.years}, threshold: {self.threshold_initial} \
             \nOriginal size: {self.size_original}, size after conflicts are removed: {self.size_after_conflicts}, percentage of original: {round(((self.size_after_conflicts/self.size_original)*100),2)}%,\
