@@ -68,7 +68,8 @@ class Evaluation:
         pa_id_1 = df['pa_id_1'].tolist()
         only_links = self.manual_links.loc[self.manual_links['pa_id1'].isin(
             pa_id_1)]
-        df1 = df.merge(only_links, how='left',
+        # there was a weird error - therefore the drop_duplicates below
+        df1 = df.merge(only_links.drop_duplicates(subset=['pa_id1']), how='left',
                        left_on='pa_id_1', right_on='pa_id1')
         return df1
 
@@ -115,5 +116,29 @@ class Evaluation:
 # Evaluation("junget", "1850_1845", "EM_scikit_5", 3, 2)
 # Evaluation("thy_parishes", "1850_1845", "EM_scikit_5", 2, 1)
 # Evaluation("thy_parishes", "1850_1845", "EM_scikit_5", 3, 2)
-Evaluation("thy_parishes", "1860_1850", "EM_scikit_5", 2, 0)
-#Evaluation("thy_parishes", "1860_1850", "EM_scikit_5", 3, 0)
+# Evaluation("thy_parishes", "1860_1850", "EM_scikit_5", 2, 0)
+# Evaluation("thy_parishes", "1860_1850", "EM_scikit_5", 3, 0)
+
+Evaluation("manual", "1850_1845", "EM_scikit_3", 2, 1)
+Evaluation("manual", "1850_1845", "EM_scikit_3", 3, 2)
+Evaluation("manual", "1860_1850", "EM_scikit_3", 2, 0)
+Evaluation("manual", "1860_1850", "EM_scikit_3", 3, 0)
+
+Evaluation("manual", "1850_1845", "EM_scikit_5", 2, 0)
+Evaluation("manual", "1850_1845", "EM_scikit_5", 3, 2)
+Evaluation("manual", "1860_1850", "EM_scikit_5", 2, 1)
+Evaluation("manual", "1860_1850", "EM_scikit_5", 3, 1)
+
+
+# Match clusters for manual sets
+# scikit 3 feature:
+# 1850-45 - 2 cluster, Match cluster: 1
+# 1850-45 - 3 cluster, Match cluster: 2
+# 1860-50 - 2 cluster, Match cluster: 0
+# 1860-50 - 3 cluster, Match cluster: 0
+
+# scikit 5 feature:
+# 1850-45 - 2 cluster, Match cluster: 0
+# 1850-45 - 3 cluster, Match cluster: 2
+# 1860-50 - 2 cluster, Match cluster: 1
+# 1860-50 - 3 cluster, Match cluster: 1

@@ -42,7 +42,7 @@ class Evaluation:
         self.size_after_conflicts = len(self.removed)
         self.size_only_manuals = len(self.only_manual)
 
-        # self.precision_recall(self.correct)
+        self.precision_recall(self.correct)
 
         # temp = self.EM_results["EM probabilities"].value_counts()
         # f = open(
@@ -98,8 +98,8 @@ class Evaluation:
         # self.type_II_errors = df['Correct link'].value_counts()[3]
 
         # Below only used for Qualitative Analysis
-        df.to_csv(
-            f"C:/thesis_code/Github/Experiments/analysis/data/{self.place}_{self.years}_{self.model}", columns=['pa_id_1', 'pa_id_2', 'Correct link'], index=False)
+        # df.to_csv(
+        #     f"C:/thesis_code/Github/Experiments/analysis/data/{self.place}_{self.years}_{self.model}", columns=['pa_id_1', 'pa_id_2', 'Correct link'], index=False)
 
         return df
 
@@ -128,13 +128,13 @@ class Evaluation:
 
 
 # Evaluation("junget", "1850_1845", "EM_Abra_3", 0.0001)
-# Evaluation("thy_parishes", "1850_1845", "EM_Abra_3", 0.0001)
+Evaluation("thy_parishes", "1850_1845", "EM_Abra_3", 0.0001)
 # Evaluation("thy_parishes", "1860_1850", "EM_Abra_3", 0.0001)
 Evaluation("manual", "1850_1845", "EM_Abra_3", 0.0001)
 Evaluation("manual", "1860_1850", "EM_Abra_3", 0.0001)
 
 # Evaluation("junget", "1850_1845", "EM_Abra_5", 0.0001)
-# Evaluation("thy_parishes", "1850_1845", "EM_Abra_5", 0.0001)
+Evaluation("thy_parishes", "1850_1845", "EM_Abra_5", 0.0001)
 # Evaluation("thy_parishes", "1860_1850", "EM_Abra_5", 0.0001)
 Evaluation("manual", "1850_1845", "EM_Abra_5", 0.0001)
 Evaluation("manual", "1860_1850", "EM_Abra_5", 0.0001)

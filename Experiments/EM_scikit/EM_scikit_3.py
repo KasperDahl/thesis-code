@@ -14,8 +14,16 @@ cols = ['fn_score', 'ln_score', 'age_distance']
 #     "C:/thesis_code/Github/Experiments/data/thy_parishes_1850_1845", usecols=['fn_score', 'ln_score', 'age_distance'])
 
 # Thy 1860-1850
+# data = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/thy_parishes_1860_1850", usecols=['fn_score', 'ln_score', 'age_distance'])
+
+# Manual 1850-1845
 data = pd.read_csv(
-    "C:/thesis_code/Github/Experiments/data/thy_parishes_1860_1850", usecols=['fn_score', 'ln_score', 'age_distance'])
+    "C:/thesis_code/Github/Experiments/data/manual_1850_1845", usecols=['fn_score', 'ln_score', 'age_distance'])
+
+# Manual 1860-1850
+# data = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/manual_1860_1850", usecols=['fn_score', 'ln_score', 'age_distance'])
 
 
 class Scikit_EM:
@@ -40,7 +48,9 @@ class Scikit_EM:
 
     def GaussianMixture(self):
         model = GaussianMixture(
-            n_components=self.clusters, init_params='random', random_state=1)
+            #    n_components=self.clusters, init_params='random', random_state=1)
+            # random state needs to be removed for 3 cluster version - otherwise it reverses feature values
+            n_components=self.clusters, init_params='random')
         model.fit(data)
         results = model.predict(self.data)
         self.data['Match'] = results.tolist()
@@ -49,5 +59,8 @@ class Scikit_EM:
             f"C:/thesis_code/Github/Experiments/results_after_EM/EM_scikit_3/{self.path}_{self.clusters}", index=False)
 
 
-#Scikit_EM(data, 2, "thy_parishes_1860_1850")
-Scikit_EM(data, 3, "thy_parishes_1860_1850")
+# Scikit_EM(data, 2, "manual_1850_1845")
+Scikit_EM(data, 3, "manual_1850_1845")
+
+# Scikit_EM(data, 2, "manual_1860_1850")
+# Scikit_EM(data, 3, "manual_1860_1850")
