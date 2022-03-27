@@ -25,13 +25,14 @@ rects3 = ax.bar(r3, fscore, width=barWidth, label='F-score')
 ax.set_ylabel('Percentage')
 ax.set_title('3 clusters, 5 features scikit EM: Precision/Recall/F-score')
 ax.set_xticks([r + barWidth for r in range(len(pre))], labels)
-ax.set_ylim([0, 105])
+ax.set_ylim([30, 105])
 ax.legend(loc='lower right')
 
 ax.bar_label(rects1, padding=3)
 ax.bar_label(rects2, padding=3)
 ax.bar_label(rects3, padding=3)
-
+plt.grid(True)
 fig.tight_layout()
+
 plt.savefig('Experiments/plots/data/bar_plot_pre_rec_3_cluster_5_feature.png')
-plt.show()
+# plt.show()

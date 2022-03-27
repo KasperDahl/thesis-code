@@ -24,15 +24,16 @@ rects1 = ax.bar(x - width/2, feat_3, width, label='3 Feature EM')
 rects2 = ax.bar(x + width/2, feat_5, width, label='5 Feature EM')
 
 
-ax.set_ylabel('Percentage')
-ax.set_title('Conflicts resolved: Val. set  1850 to 1845')
-ax.set_xticks(x, labels)
+ax.set_ylabel('Percentage', fontsize=18)
+#ax.set_title('Conflicts resolved: Val. set  1850 to 1845')
+ax.set_xticks(x, labels, fontsize=18)
 ax.set_ylim([0, 105])
 ax.legend()
 
 ax.bar_label(rects1, padding=3)
 ax.bar_label(rects2, padding=3)
 
+plt.grid(True)
 fig.tight_layout()
 plt.savefig(
     'Experiments/plots/data/bar_plot_NO_CONFLICT_1850_1845.png')
