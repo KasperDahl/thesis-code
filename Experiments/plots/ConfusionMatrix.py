@@ -9,8 +9,8 @@ y_true = df['Correct link'].to_list()
 y_pred = df['Match'].to_list()
 #labels = [0, 1, 2, 3]
 ConfusionMatrixDisplay.from_predictions(y_true, y_pred)
-plt.savefig('Experiments/plots/data/confusion_matrix.png')
-# plt.show()
+# plt.savefig('Experiments/plots/data/confusion_matrix.png')
+plt.show()
 
 
 # begge sets skal bare være 0 og 1

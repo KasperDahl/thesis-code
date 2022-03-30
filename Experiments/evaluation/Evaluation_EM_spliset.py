@@ -40,7 +40,7 @@ class Evaluation:
         self.size_after_conflicts = len(self.resolved)
         self.size_only_manuals = len(self.only_manual)
 
-        self.precision_recall(self.correct)
+        # self.precision_recall(self.correct)
 
         # temp = self.EM_results["EM probabilities"].value_counts()
         # f = open(
@@ -105,6 +105,9 @@ class Evaluation:
         # self.type_I_errors = df['Correct link'].value_counts()[2]
         # self.type_II_errors = df['Correct link'].value_counts()[3]
 
+        df.to_csv(
+            f"C:/thesis_code/Github/Experiments/plots/confusion_data/splitset_age_{self.years}", columns=['Match', 'Correct link'])
+
         # Below only used for Qualitative Analysis
         # df.to_csv(
         #     f"C:/thesis_code/Github/Experiments/analysis/data/{self.place}_{self.years}_{self.model}", columns=['pa_id_1', 'pa_id_2', 'Correct link'], index=False)
@@ -125,7 +128,7 @@ class Evaluation:
         pre_recall = precision_recall_fscore_support(
             manual_links, results, average='macro')
         f = open(
-            f"C:/thesis_code/Github/Experiments/evaluation_results/splitset_{self.years}", "a")
+            f"C:/thesis_code/Github/Experiments/evaluation_results/splitset_{self.path}", "a")
         f.write(
             f"\nSet: {self.path}, threshold: {self.threshold_initial} \
             \nOriginal size: {self.size_original}, size after conflicts are removed: {self.size_after_conflicts}, percentage of original: {round(((self.size_after_conflicts/self.size_original)*100),2)}%,\
@@ -135,4 +138,6 @@ class Evaluation:
             \nPrecision-Recall-score: {pre_recall}\n")
 
 
-Evaluation("1850_1845", 0.0001, "1850_1845_males")
+#Evaluation("1860_1850", 0.0001, "1860_1850_gender")
+Evaluation("1850_1845", 0.0001, "1850_1845_age")
+Evaluation("1860_1850", 0.0001, "1860_1850_age")

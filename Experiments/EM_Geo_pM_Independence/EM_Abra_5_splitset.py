@@ -5,8 +5,8 @@ from bisect import bisect_left
 
 
 # 1850-1845 Males - Match guess: 5,200
-dataset = pd.read_csv(
-    "C:/thesis_code/Github/Experiments/data/splitset/1850_1845_males")
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/splitset/1850_1845_males")
 
 # # 1850-1845 Females - Match guess: 5,200
 # dataset = pd.read_csv(
@@ -23,19 +23,19 @@ dataset = pd.read_csv(
 
 # # 1860-1850 Males - Match guess: 4,800
 # dataset = pd.read_csv(
-#     "C:/thesis_code/Github/Experiments/data/splitset/1860-1850_males")
+#     "C:/thesis_code/Github/Experiments/data/splitset/1860_1850_males")
 
 # # 1860-1850 Females - Match guess: 4,800
 # dataset = pd.read_csv(
-#     "C:/thesis_code/Github/Experiments/data/splitset/1860-1850_females")
+#     "C:/thesis_code/Github/Experiments/data/splitset/1860_1850_females")
 
 # # 1860-1850 Above age - Match guess 4,800
 # dataset = pd.read_csv(
-#     "C:/thesis_code/Github/Experiments/data/splitset/1860-1850_above_age")
+#     "C:/thesis_code/Github/Experiments/data/splitset/1860_1850_above_age")
 
 # # 1860-1850 Below age - Match guess 4,800
-# dataset = pd.read_csv(
-#     "C:/thesis_code/Github/Experiments/data/splitset/1860-1850_below_age")
+dataset = pd.read_csv(
+    "C:/thesis_code/Github/Experiments/data/splitset/1860_1850_below_age")
 
 # Match guess 1860-1850: 4,800
 
@@ -211,10 +211,10 @@ dataset_values = np.array(
 
 # TEST CLASS
 print(f"starting CLASS")
-em = ExpectationMaximization(dataset_values, 5200)
+em = ExpectationMaximization(dataset_values, 4800)
 results = em.em_steps(7)
 print(f"Results: \n {results}")
 em.evaluation_bayes(dataset_values, results,
-                    data_bisect, "1850_1845_males")
+                    data_bisect, "1860_1850_below_age")
 
 # GOING FORWARD: 1850_1845_males, 1850_1845_females, 1850_1845_above_age, 1850_1845_below_age

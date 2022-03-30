@@ -86,6 +86,8 @@ class Baseline:
         values = [1, 2, 3]
         df['Correct link'] = np.select(conditions, values, default=0)
         self.match_values = df['Correct link'].value_counts()
+        # df.to_csv(
+        #     f"C:/thesis_code/Github/Experiments/plots/confusion_data/baseline_{self.years}", columns=['Match', 'Correct link'])
         return df
 
     def precision_recall(self, df):
