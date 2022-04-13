@@ -27,7 +27,6 @@ class Evaluation:
 
         # variables get updated in find_correct_links()-function
         self.match_values = 0
-        #self.type_I_errors = self.type_II_errors = self.correct_matches = self.correct_non_matches = 0
 
         # function calls
         self.threshold = self.probability_threshold(
@@ -45,12 +44,6 @@ class Evaluation:
 
         self.precision_recall(self.correct)
 
-        # temp = self.EM_results["EM probabilities"].value_counts()
-        # f = open(
-        #     f"C:/thesis_code/Github/Experiments/probability_spread", "a")
-        # f.write(
-        #     f"\nProbability spread for {self.model} in {self.place} {self.years}\n{temp}\n")
-
     def probability_threshold(self, df, threshold):
         # Everything above the threshold will be calculated to a match (1), everything behold to a non-match(1)
         df.loc[df['EM probabilities'] >= threshold, 'Match'] = 1
@@ -67,12 +60,6 @@ class Evaluation:
             "EM probabilities"].transform(lambda x: len(x) == 1)
         df.loc[:, "Match"] = 1 * (max_proba & mask_unique)
         return df
-
-    # def remove_conflicts(self, df):
-    #     # remove all pairs for conflicting matches, meaning when the EM links the individual more than once
-    #     grouped = df.groupby('pa_id_1')
-    #     filtered = grouped.filter(lambda x: (x['Match'].sum()) <= 1)
-    #     return filtered
 
     def remove_non_manual_link(self, df):
         # remove the links from the comparison space that have not been manually linked
@@ -105,9 +92,6 @@ class Evaluation:
         # Below only used for Qualitative Analysis
         df.to_csv(
             f"C:/thesis_code/Github/Experiments/analysis/data/{self.place}_{self.years}_{self.model}", columns=['pa_id_1', 'pa_id_2', 'Correct link'], index=False)
-        # df.to_csv(
-        #      f"C:/thesis_code/Github/Experiments/plots/confusion_data/{self.place}_{self.years}_{self.model}", columns=['Match', 'Correct link'])
-
         return df
 
     def precision_recall(self, df):
@@ -115,9 +99,6 @@ class Evaluation:
             df['Correct link'] == 3, 1, df['Correct link'])
         df['Correct link'] = np.where(
             df['Correct link'] == 2, 0, df['Correct link'])
-        # Below only used for confusion matrix
-        # df.to_csv(
-        #     f"C:/thesis_code/Github/Experiments/plots/confusion_data/{self.place}_{self.years}_{self.model}", columns=['Match', 'Correct link'])
         manual_links = df['Correct link'].tolist()
         results = df['Match'].tolist()
         pre_recall = precision_recall_fscore_support(
@@ -133,38 +114,9 @@ class Evaluation:
             \nPrecision-Recall-score: {pre_recall}\n")
 
 
-# Evaluation("junget", "1850_1845", "EM_Abra_3", 0.0001)
-# Evaluation("thy_parishes", "1850_1845", "EM_Abra_3", 0.0001)
-# Evaluation("thy_parishes", "1860_1850", "EM_Abra_3", 0.0001)
 Evaluation("manual", "1850_1845", "EM_Abra_3", 0.0001)
 Evaluation("manual", "1860_1850", "EM_Abra_3", 0.0001)
 
-# Evaluation("junget", "1850_1845", "EM_Abra_5", 0.0001)
-# Evaluation("thy_parishes", "1850_1845", "EM_Abra_5", 0.0001)
-# Evaluation("thy_parishes", "1860_1850", "EM_Abra_5", 0.0001)
+
 Evaluation("manual", "1850_1845", "EM_Abra_5", 0.0001)
 Evaluation("manual", "1860_1850", "EM_Abra_5", 0.0001)
-
-# Evaluation("junget", "1850_1845", "EM_Own_3", 0.5)
-# Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.5)
-# Evaluation("thy_parishes", "1860_1850", "EM_Own_3", 0.5)
-
-# Evaluation("junget", "1850_1845", "EM_Own_3", 0.65)
-# Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.65)
-# Evaluation("thy_parishes", "1860_1850", "EM_Own_3", 0.65)
-
-# Evaluation("junget", "1850_1845", "EM_Own_3", 0.80)
-# Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.80)
-# Evaluation("thy_parishes", "1860_1850", "EM_Own_3", 0.80)
-
-# Evaluation("junget", "1850_1845", "EM_Own_5", 0.5)
-# Evaluation("thy_parishes", "1850_1845", "EM_Own_5", 0.5)
-# Evaluation("thy_parishes", "1860_1850", "EM_Own_5", 0.5)
-
-# Evaluation("junget", "1850_1845", "EM_Own_5", 0.65)
-# Evaluation("thy_parishes", "1850_1845", "EM_Own_5", 0.65)
-# Evaluation("thy_parishes", "1860_1850", "EM_Own_5", 0.65)
-
-# Evaluation("junget", "1850_1845", "EM_Own_5", 0.80)
-# Evaluation("thy_parishes", "1850_1845", "EM_Own_5", 0.80)
-# Evaluation("thy_parishes", "1860_1850", "EM_Own_5", 0.80)

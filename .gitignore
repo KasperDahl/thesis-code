@@ -18,6 +18,7 @@ ExpectationMaximization_GEO_NO_PM.py
 probability_spread
 
 # folders
+test/
 data/
 plotting/plots/
 results_after_EM/
