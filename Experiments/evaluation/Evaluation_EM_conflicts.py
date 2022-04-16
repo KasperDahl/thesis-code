@@ -133,17 +133,21 @@ class Evaluation:
             \nPrecision-Recall-score: {pre_recall}\n")
 
 
+Evaluation("junget", "1850_1845", "Abramitzsky", 0.7)
+Evaluation("thy_parishes", "1850_1845", "Abramitzsky", 0.7)
+
+
 # Evaluation("junget", "1850_1845", "EM_Abra_3", 0.0001)
 # Evaluation("thy_parishes", "1850_1845", "EM_Abra_3", 0.0001)
 # Evaluation("thy_parishes", "1860_1850", "EM_Abra_3", 0.0001)
-Evaluation("manual", "1850_1845", "EM_Abra_3", 0.0001)
-Evaluation("manual", "1860_1850", "EM_Abra_3", 0.0001)
+# Evaluation("manual", "1850_1845", "EM_Abra_3", 0.0001)
+# Evaluation("manual", "1860_1850", "EM_Abra_3", 0.0001)
 
 # Evaluation("junget", "1850_1845", "EM_Abra_5", 0.0001)
 # Evaluation("thy_parishes", "1850_1845", "EM_Abra_5", 0.0001)
 # Evaluation("thy_parishes", "1860_1850", "EM_Abra_5", 0.0001)
-Evaluation("manual", "1850_1845", "EM_Abra_5", 0.0001)
-Evaluation("manual", "1860_1850", "EM_Abra_5", 0.0001)
+# Evaluation("manual", "1850_1845", "EM_Abra_5", 0.0001)
+# Evaluation("manual", "1860_1850", "EM_Abra_5", 0.0001)
 
 # Evaluation("junget", "1850_1845", "EM_Own_3", 0.5)
 # Evaluation("thy_parishes", "1850_1845", "EM_Own_3", 0.5)
