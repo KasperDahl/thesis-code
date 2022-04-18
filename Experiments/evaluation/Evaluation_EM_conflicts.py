@@ -133,8 +133,10 @@ class Evaluation:
             \nPrecision-Recall-score: {pre_recall}\n")
 
 
-Evaluation("junget", "1850_1845", "Abramitzsky", 0.7)
-Evaluation("thy_parishes", "1850_1845", "Abramitzsky", 0.7)
+# Evaluation("junget", "1850_1845", "Abramitzsky", 0.8)
+# Evaluation("thy_parishes", "1850_1845", "Abramitzsky", 0.8)
+Evaluation("manual", "1850_1845", "Abramitzsky", 0.8)
+Evaluation("manual", "1860_1850", "Abramitzsky", 0.8)
 
 
 # Evaluation("junget", "1850_1845", "EM_Abra_3", 0.0001)

@@ -5,9 +5,17 @@ from bisect import bisect_left
 from time import perf_counter as pc
 
 
-dataset = pd.read_csv(
-    "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/data/comp_sets/thy_parishes_1850_1845")
 #dataset = pd.read_csv("C:/thesis_code/Github/data/comp_sets/junget_1850_1845")
+
+# Manual 1850-1845
+# dataset = pd.read_csv(
+#     "C:/thesis_code/Github/Experiments/data/manual_1850_1845")
+
+# Manual 1860-1850
+dataset = pd.read_csv(
+    "C:/thesis_code/Github/Experiments/data/manual_1860_1850")
 
 
 class ExpectationMaximization:
@@ -139,7 +147,7 @@ data_bisect = pd.DataFrame(
 
 # TEST CLASS
 print(f"starting CLASS")
-em = ExpectationMaximization(dataset_values, 2200)
+em = ExpectationMaximization(dataset_values, 9686)
 em.em_steps(50)
-probs = em.bayes_conversion(data_bisect, "thy_1850_1845")
+probs = em.bayes_conversion(data_bisect, "manual_1860_1850")
 # print(probs)
